@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meme Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Teks utama di tengah -->
+  <div class="centered column">
+    <h1 id="openTextModal" class="clickable">Text Generate</h1>
+    <h1 id="openImageModal" class="clickable">Image Generate</h1>
+  </div>
+
+  <!-- Modal Text -->
+  <div id="textModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('textModal')">&times;</span>
+      <h2>🎉 Meme Generator dari Teks!</h2>
+
+      <input type="text" id="prompt" placeholder="Masukkan ide meme..." style="width: 100%; padding: 10px; margin-top: 10px;" />
+      <button onclick="generateMeme()" style="margin-top: 10px; padding: 10px 20px;">Generate Meme</button>
+
+      <div id="resultArea" style="margin-top: 20px;">
+        <p id="status" style="color: gray;"></p>
+        <img id="memeImage" src="" alt="Hasil meme akan tampil di sini" style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Image -->
+  <div id="imageModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('imageModal')">&times;</span>
+      <h2>🖼️ Meme Generator dari Gambar!</h2>
+
+      <input type="file" id="imageInput" accept="image/*" style="margin-top: 10px;" />
+      <button onclick="generateImageMeme()" style="margin-top: 10px; padding: 10px 20px;">Upload & Generate</button>
+
+      <div id="resultAreaImage" style="margin-top: 20px;">
+        <p id="statusImage" style="color: gray;"></p>
+        <img id="uploadedMemeImage" src="" alt="Hasil meme dari gambar" style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

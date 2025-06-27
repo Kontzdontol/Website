@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background-image: url("images/background.gif");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: Arial, sans-serif;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column; /* agar h1 ditumpuk vertikal */
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 20px; /* jarak antar elemen vertikal */
+}
+
+h1 {
+  color: white;
+  font-size: 1.8em;
+  text-align: center;
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h1:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Popup styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  background-color: white;
+  color: black;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.close {
+  color: red;
+  font-size: 24px;
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.close:hover {
+  color: darkred;
+}
