@@ -1,3 +1,12 @@
+/* === Global Reset & Box Sizing === */
+* {
+  box-sizing: border-box;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* --- Latar belakang ganda --- */
 .background-layer {
   position: fixed;
@@ -10,12 +19,10 @@
   background-size: cover;
   z-index: -2;
 }
-
 .background-gif {
   background-image: url("images/background.gif");
   z-index: -2;
 }
-
 .background-jpg {
   background-image: url("images/background.jpg");
   opacity: 0.5;
@@ -33,118 +40,58 @@ body {
   position: relative;
 }
 
-/* Ikon Feature */
-.feature-icon {
+/* === Ikon === */
+.profile-icon,
+.email-icon,
+.insta-icon,
+.twitter-icon,
+.medium-icon {
   position: fixed;
-  top: 240px;
-  right: 340px;
-  width: 280px;
+  left: 160px;
+  width: 130px;
   height: auto;
   z-index: 11;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
+.profile-icon:hover,
+.email-icon:hover,
+.insta-icon:hover,
+.twitter-icon:hover,
+.medium-icon:hover {
+  transform: scale(1.05);
+}
+
+.profile-icon { top: 50px; }
+.email-icon   { top: 220px; }
+.insta-icon   { top: 390px; }
+.twitter-icon { top: 580px; }
+.medium-icon  { top: 760px; }
 
 /* Tombol Editor */
 .editor-button {
   position: fixed;
-  bottom: 690px;
-  right: 375px;
-  width: 200px;
+  top: 930px; /* Di bawah medium-icon yang top: 760px + tinggi 130px + jarak */
+  left: 140px;
+  width: 180px;
   height: auto;
   cursor: pointer;
   z-index: 11;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
-
 .editor-button:hover {
   transform: scale(1.1);
   filter: brightness(1.2);
 }
 
-/* Ikon Profile */
-.profile-icon {
-  position: fixed;
-  top: 50px;
-  left: 160px;
-  width: 130px;
-  height: auto;
-  z-index: 11;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.profile-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Ikon Email */
-.email-icon {
-  position: fixed;
-  top: 220px;
-  left: 160px;
-  width: 130px;
-  height: auto;
-  z-index: 11;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.email-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Ikon Instagram */
-.insta-icon {
-  position: fixed;
-  top: 390px;
-  left: 160px;
-  width: 130px;
-  height: auto;
-  z-index: 11;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.insta-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Ikon Twitter */
-.twitter-icon {
-  position: fixed;
-  top: 580px;
-  left: 160px;
-  width: 130px;
-  height: auto;
-  z-index: 11;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.twitter-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Ikon Medium */
-.medium-icon {
-  position: fixed;
-  top: 760px;
-  left: 160px;
-  width: 130px;
-  height: auto;
-  z-index: 11;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.medium-icon:hover {
-  transform: scale(1.05);
-}
-
-/* === Popup Profil === */
-.profile-popup {
+/* === Popup Umum === */
+.profile-popup,
+.email-popup,
+.insta-popup,
+.twitter-popup,
+.medium-popup {
   display: none;
   position: fixed;
-  top: 50px;
   left: 300px;
   background-color: #fff;
   color: #000;
@@ -155,8 +102,17 @@ body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   animation: fadeIn 0.3s ease-in-out;
 }
+.profile-popup { top: 50px; }
+.email-popup   { top: 220px; }
+.insta-popup   { top: 390px; width: 160px; }
+.twitter-popup { top: 580px; width: 160px; }
+.medium-popup  { top: 760px; width: 180px; }
 
-.profile-popup h3 {
+.profile-popup h3,
+.email-popup h3,
+.insta-popup h3,
+.twitter-popup h3,
+.medium-popup h3 {
   margin-top: 0;
   font-size: 18px;
 }
@@ -167,28 +123,11 @@ body {
   margin-bottom: 10px;
 }
 
-.profile-popup p {
-  font-size: 18px;
-  margin: 0;
-}
-
-/* === Popup Email === */
-.email-popup {
-  display: none;
-  position: fixed;
-  top: 220px;
-  left: 300px;
-  background-color: #fff;
-  color: #000;
-  border-radius: 10px;
-  padding: 15px;
-  z-index: 100;
-  width: 260px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.email-popup p {
+.profile-popup p,
+.email-popup p,
+.insta-popup p,
+.twitter-popup p,
+.medium-popup p {
   font-size: 18px;
   margin: 0;
   word-break: break-word;
@@ -203,100 +142,19 @@ body {
   cursor: pointer;
 }
 
-/* === Popup Instagram === */
-.insta-popup {
-  display: none;
-  position: fixed;
-  top: 390px;
-  left: 300px;
-  background-color: #fff;
-  color: #000;
-  border-radius: 10px;
-  padding: 15px;
-  z-index: 100;
-  width: 160px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.insta-popup p {
-  font-size: 18px;
-  margin: 0;
-  word-break: break-word;
-}
-
-.insta-popup a {
-  color: #000;
-  text-decoration: none;
-}
-
-.insta-popup a:hover {
-  text-decoration: underline;
-}
-
-/* === Popup Twitter === */
-.twitter-popup {
-  display: none;
-  position: fixed;
-  top: 580px;
-  left: 300px;
-  background-color: #fff;
-  color: #000;
-  border-radius: 10px;
-  padding: 15px;
-  z-index: 100;
-  width: 160px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.twitter-popup p {
-  font-size: 18px;
-  margin: 0;
-  word-break: break-word;
-}
-
-.twitter-popup a {
-  color: #000;
-  text-decoration: none;
-}
-
-.twitter-popup a:hover {
-  text-decoration: underline;
-}
-
-/* === Popup Medium === */
-.medium-popup {
-  display: none;
-  position: fixed;
-  top: 760px;
-  left: 300px;
-  background-color: #fff;
-  color: #000;
-  border-radius: 10px;
-  padding: 15px;
-  z-index: 100;
-  width: 180px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.medium-popup p {
-  font-size: 18px;
-  margin: 0;
-  word-break: break-word;
-}
-
+.insta-popup a,
+.twitter-popup a,
 .medium-popup a {
   color: #000;
   text-decoration: none;
 }
-
+.insta-popup a:hover,
+.twitter-popup a:hover,
 .medium-popup a:hover {
   text-decoration: underline;
 }
 
-/* Modal / Popup */
+/* === Modal / Editor === */
 .modal {
   display: none;
   position: fixed;
@@ -304,7 +162,6 @@ body {
   inset: 0;
   background-color: rgba(0, 0, 0, 0.6);
 }
-
 .modal-content {
   background-color: white;
   color: black;
@@ -317,12 +174,10 @@ body {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease-in-out;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .close {
   color: red;
   font-size: 24px;
@@ -330,36 +185,28 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
-
 .close:hover {
   color: darkred;
 }
 
-/* Responsif untuk layar kecil */
+/* === Responsif Mobile === */
 @media (max-width: 600px) {
   .modal-content {
     width: 95%;
     margin: 20% auto;
   }
 
-  .feature-icon {
-    top: 20px;
-    left: 20px;
-    width: 80px;
-  }
-
-  .editor-button {
-    bottom: 15px;
-    right: 15px;
-    width: 100px;
-  }
+.editor-button {
+  top: 385px; /* setelah medium-icon yang top: 315px + tinggi 60px + jarak 10px */
+  left: 15px;
+  width: 60px;
+}
 
   .profile-icon,
   .email-icon,
   .insta-icon,
-  .twitter-icon 
+  .twitter-icon,
   .medium-icon {
-    top: unset;
     width: 60px;
     left: 15px;
   }
@@ -368,16 +215,20 @@ body {
   .email-icon   { top: 90px; }
   .insta-icon   { top: 165px; }
   .twitter-icon { top: 240px; }
-  .medium-icon { top: 315px; }
+  .medium-icon  { top: 315px; }
+
+  .profile-popup { top: 15px; }
+  .email-popup   { top: 90px; }
+  .insta-popup   { top: 165px; width: 200px; }
+  .twitter-popup { top: 240px; width: 200px; }
+  .medium-popup  { top: 315px; width: 200px; }
 
   .profile-popup,
   .email-popup,
   .insta-popup,
-  .twitter-popup, 
+  .twitter-popup,
   .medium-popup {
     left: 15px;
-    top: 310px;
-    width: 250px;
     padding: 10px;
   }
 
@@ -388,7 +239,7 @@ body {
   .profile-popup h3,
   .email-popup p,
   .insta-popup p,
-  .twitter-popup p, 
+  .twitter-popup p,
   .medium-popup p {
     font-size: 16px;
   }
