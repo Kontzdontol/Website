@@ -11,46 +11,7 @@ const API_KEY = "a87cef63-0ffe-4142-a129-303c563a749a";
 app.use(cors());
 app.use(bodyParser.json({ limit: '20mb' }));
 
-// === TEXT-BASED GENERATION ===
-app.post("/generate-image", async (req, res) => {
-  const { prompt, input_image } = req.body;
-
-  const payload = {
-    prompt,
-    input_image,
-    aspect_ratio: "1:1",
-    seed: null,
-    prompt_upsampling: false,
-    safety_tolerance: 2,
-    output_format: "jpeg",
-    webhook_url: null,
-    webhook_secret: null
-  };
-
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "accept": "application/json",
-        "x-key": API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "❌ Gagal dari API", detail: data });
-    }
-
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Server error", detail: err.message });
-  }
-});
-
-// === IMAGE-BASED EDITING ===
+// === IMAGE-BASED EDITING ONLY ===
 app.post("/generate-image", async (req, res) => {
   const { prompt, input_image } = req.body;
 
@@ -69,12 +30,12 @@ app.post("/generate-image", async (req, res) => {
       body: JSON.stringify({
         prompt,
         input_image,
-        aspect_ratio: "1:1", // tambahkan biar jelas
+        aspect_ratio: "1:1",
         output_format: "jpeg"
       })
     });
 
-    const text = await response.text(); // <-- agar kita bisa log meskipun bukan JSON valid
+    const text = await response.text();
     console.log("🔁 Response dari BFL API:", text);
 
     if (!response.ok) {

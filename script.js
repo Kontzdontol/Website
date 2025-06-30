@@ -1,104 +1,108 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const openTextModalBtn = document.getElementById("openTextModal");
   const openImageModalBtn = document.getElementById("openImageModal");
-  const textModal = document.getElementById("textModal");
   const imageModal = document.getElementById("imageModal");
-  const textGenerateBtn = textModal.querySelector("button");
-  const imageGenerateBtn = imageModal.querySelector("button");
+  const imageGenerateBtn = document.getElementById("generateImageBtn");
+  const fileInput = document.getElementById("imageInput");
+  const status = document.getElementById("statusImage");
+  const img = document.getElementById("uploadedMemeImage");
 
-  // Open modals
-  openTextModalBtn.onclick = () => (textModal.style.display = "block");
-  openImageModalBtn.onclick = () => (imageModal.style.display = "block");
+  const profileIcon = document.getElementById("profileIcon");
+  const profilePopup = document.getElementById("profilePopup");
 
-  // Close modals
-  document.querySelectorAll(".close").forEach(btn => {
-    btn.onclick = () => {
-      textModal.style.display = "none";
-      imageModal.style.display = "none";
-    };
+  const emailIcon = document.getElementById("emailIcon");
+  const emailPopup = document.getElementById("emailPopup");
+  const closeEmailBtn = document.querySelector(".close-email");
+
+  const instaIcon = document.getElementById("instaIcon");
+  const instaPopup = document.getElementById("instaPopup");
+
+  const twitterIcon = document.getElementById("twitterIcon");
+  const twitterPopup = document.getElementById("twitterPopup");
+
+  const mediumIcon = document.getElementById("mediumIcon");
+  const mediumPopup = document.getElementById("mediumPopup");
+
+  // === Modal Editor ===
+  openImageModalBtn.addEventListener("click", () => {
+    imageModal.style.display = "block";
   });
 
-  window.onclick = e => {
-    if (e.target === textModal) textModal.style.display = "none";
-    if (e.target === imageModal) imageModal.style.display = "none";
-  };
+  document.querySelectorAll(".close").forEach(btn => {
+    btn.addEventListener("click", () => {
+      imageModal.style.display = "none";
+      resetForm();
+    });
+  });
 
-  // === TEXT → IMAGE ===
-  textGenerateBtn.onclick = async () => {
-    const prompt = document.getElementById("prompt").value.trim();
-    const status = document.getElementById("status");
-    const img = document.getElementById("memeImage");
-
-    if (!prompt) {
-      status.innerText = "⚠️ Prompt tidak boleh kosong!";
-      return;
+  window.addEventListener("click", e => {
+    if (e.target === imageModal) {
+      imageModal.style.display = "none";
+      resetForm();
     }
+  });
 
-    status.innerText = "⏳ Mengirim permintaan ke AI...";
-    img.style.display = "none";
-    img.src = "";
-    textGenerateBtn.disabled = true;
-    textGenerateBtn.innerText = "Loading...";
+  // === Toggle Popups ===
+  profileIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePopup(profilePopup);
+    hidePopups([emailPopup, instaPopup, twitterPopup, mediumPopup]);
+  });
 
-    try {
-      const response = await fetch("http://localhost:3000/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json"
-        },
-        body: JSON.stringify({ prompt, aspect_ratio: "1:1" })
-      });
+  emailIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePopup(emailPopup);
+    hidePopups([profilePopup, instaPopup, twitterPopup, mediumPopup]);
+  });
 
-      if (!response.ok) throw new Error(`HTTP ${response.status} - Gagal kirim permintaan`);
+  instaIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePopup(instaPopup);
+    hidePopups([profilePopup, emailPopup, twitterPopup, mediumPopup]);
+  });
 
-      const data = await response.json();
-      const pollingUrl = data.polling_url;
-      if (!pollingUrl) throw new Error("❌ Polling URL tidak ditemukan!");
+  twitterIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePopup(twitterPopup);
+    hidePopups([profilePopup, emailPopup, instaPopup, mediumPopup]);
+  });
 
-      status.innerText = "🔄 Menunggu hasil dari AI...";
+  mediumIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePopup(mediumPopup);
+    hidePopups([profilePopup, emailPopup, instaPopup, twitterPopup]);
+  });
 
-      let result = null;
-      for (let i = 0; i < 60; i++) {
-        await new Promise(r => setTimeout(r, 1000));
-        const poll = await fetch(`http://localhost:3000/poll?url=${encodeURIComponent(pollingUrl)}`);
-        const pollData = await poll.json();
-        console.log("Polling status:", pollData.status);
+  if (closeEmailBtn) {
+    closeEmailBtn.addEventListener("click", () => {
+      emailPopup.style.display = "none";
+    });
+  }
 
-        if (pollData.status === "Ready") {
-          result = pollData;
-          break;
-        }
-        if (["Error", "Failed"].includes(pollData.status)) {
-          throw new Error(pollData.error || "Gagal memproses permintaan.");
-        }
-      }
+  // Close all popups when clicking outside
+  window.addEventListener("click", (e) => {
+    if (!profilePopup.contains(e.target) && e.target !== profileIcon) profilePopup.style.display = "none";
+    if (!emailPopup.contains(e.target) && e.target !== emailIcon) emailPopup.style.display = "none";
+    if (!instaPopup.contains(e.target) && e.target !== instaIcon) instaPopup.style.display = "none";
+    if (!twitterPopup.contains(e.target) && e.target !== twitterIcon) twitterPopup.style.display = "none";
+    if (!mediumPopup.contains(e.target) && e.target !== mediumIcon) mediumPopup.style.display = "none";
+  });
 
-      if (!result?.result?.sample) throw new Error("⏰ Timeout: Gambar tidak tersedia.");
+  function togglePopup(popup) {
+    popup.style.display = (popup.style.display === "block") ? "none" : "block";
+  }
 
-      img.src = result.result.sample;
-      img.style.display = "block";
-      status.innerText = "✅ Gambar berhasil dibuat!";
-    } catch (err) {
-      console.error("❌ Error:", err);
-      status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan.");
-    } finally {
-      textGenerateBtn.disabled = false;
-      textGenerateBtn.innerText = "Generate Meme";
-    }
-  };
+  function hidePopups(popups) {
+    popups.forEach(p => p.style.display = "none");
+  }
 
-  // === IMAGE → IMAGE EDIT ===
-  imageGenerateBtn.onclick = async () => {
-    const fileInput = document.getElementById("imageInput");
-    const status = document.getElementById("statusImage");
-    const img = document.getElementById("uploadedMemeImage");
-
+  // === Generate Image with AI ===
+  imageGenerateBtn.addEventListener("click", async () => {
+    const file = fileInput.files[0];
     const prompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
-    if (!fileInput.files[0]) return alert("Pilih gambar terlebih dahulu.");
-    if (!prompt || prompt.trim() === "") return alert("Prompt tidak boleh kosong.");
+    if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
+    if (!prompt || prompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
 
-    const fileSizeMB = fileInput.files[0].size / 1024 / 1024;
+    const fileSizeMB = file.size / 1024 / 1024;
     if (fileSizeMB > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
     status.innerText = "📤 Mengunggah gambar...";
@@ -106,55 +110,33 @@ document.addEventListener("DOMContentLoaded", () => {
     imageGenerateBtn.innerText = "Uploading...";
 
     const reader = new FileReader();
-    reader.onload = async function () {
-  const base64Image = reader.result.split(",")[1];
-  console.log("📷 Base64 image length:", base64Image.length); // <--- Tambahkan di sini
+    reader.onload = async () => {
+      const base64Image = reader.result.split(",")[1];
 
       try {
-        const response = await fetch("http://localhost:3000/generate-image", {
+        const res = await fetch("http://localhost:3000/generate-image", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            accept: "application/json"
+            Accept: "application/json"
           },
           body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("❌ Server response error:", errorText);
-          throw new Error("Gagal mengirim permintaan edit gambar.");
-        }
+        if (!res.ok) throw new Error(await res.text());
 
-        const data = await response.json();
-        const pollingUrl = data.polling_url;
-        if (!pollingUrl) throw new Error("Polling URL tidak ditemukan.");
+        const { polling_url } = await res.json();
+        if (!polling_url) throw new Error("Polling URL tidak tersedia.");
 
-        status.innerText = "⏳ Menunggu hasil dari AI...";
-        let result = null;
+        status.innerText = "⏳ Memproses gambar di AI...";
+        const result = await pollForResult(polling_url);
 
-        for (let i = 0; i < 60; i++) {
-          await new Promise(r => setTimeout(r, 1000));
-          const poll = await fetch(`http://localhost:3000/poll?url=${encodeURIComponent(pollingUrl)}`);
-          const pollData = await poll.json();
-          console.log("Polling status:", pollData.status);
-
-          if (pollData.status === "Ready") {
-            result = pollData;
-            break;
-          }
-          if (["Error", "Failed"].includes(pollData.status)) {
-            throw new Error(pollData.error || "Gagal memproses gambar.");
-          }
-        }
-
-        if (!result?.result?.sample) throw new Error("⏰ Timeout: Gambar tidak tersedia.");
-
+        if (!result?.result?.sample) throw new Error("⏰ Timeout atau gambar tidak tersedia.");
         img.src = result.result.sample;
         img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
-        console.error("❌ Error saat edit gambar:", err);
+        console.error("❌ Error:", err);
         status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan.");
       } finally {
         imageGenerateBtn.disabled = false;
@@ -162,6 +144,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    reader.readAsDataURL(fileInput.files[0]);
-  };
+    reader.readAsDataURL(file);
+  });
+
+  async function pollForResult(url) {
+    for (let i = 0; i < 60; i++) {
+      await new Promise(r => setTimeout(r, 1000));
+      const poll = await fetch(`http://localhost:3000/poll?url=${encodeURIComponent(url)}`);
+      const data = await poll.json();
+      console.log(`[Polling] Status: ${data.status}`);
+
+      if (data.status === "Ready") return data;
+      if (["Error", "Failed"].includes(data.status)) throw new Error(data.error || "Gagal memproses gambar.");
+    }
+    throw new Error("Polling timeout.");
+  }
+
+  function resetForm() {
+    fileInput.value = "";
+    img.src = "";
+    img.style.display = "none";
+    status.innerText = "";
+  }
 });
