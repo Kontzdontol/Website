@@ -201,10 +201,12 @@ body {
   .twitter-icon { top: 270px; }
   .medium-icon  { top: 350px; }
   .editor-button {
-    top: 430px;
+    top: 460px;      /* sedikit lebih ke bawah */
+    left: 4vw;       /* sedikit lebih ke kiri */
     width: 22vw;
     max-width: 70px;
   }
+}
 
   .profile-icon,
   .email-icon,
