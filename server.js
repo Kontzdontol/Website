@@ -7,9 +7,8 @@ require('dotenv').config(); // ✅ Load .env
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_URL = "https://api.bfl.ai/v1/flux-kontext-pro";
-const API_KEY = process.env.API_KEY; // ✅ Ambil dari .env
-
-console.log("✅ ENV API_KEY:", API_KEY); // 🔍 Tambahkan log untuk debug
+const API_KEY = process.env.API_KEY;
+console.log("✅ ENV API_KEY:", API_KEY); // WAJIB ADA
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '20mb' }));
