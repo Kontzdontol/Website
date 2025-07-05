@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const base64Image = reader.result.split(",")[1];
 
       try {
-        const res = await fetch("https://ai-backend-production-1fe9.up.railway.app/generate-image", {
+        const res = await fetch("https://ai-backend-production-2599.up.railway.app/generate-image", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function pollForResult(url) {
     for (let i = 0; i < 60; i++) {
       await new Promise(r => setTimeout(r, 1000));
-      const poll = await fetch(`https://ai-backend-production-1fe9.up.railway.app/poll?url=${encodeURIComponent(url)}`);
+      const poll = await fetch(`https://ai-backend-production-2599.up.railway.app/poll?url=${encodeURIComponent(url)}`);
       const data = await poll.json();
       console.log(`[Polling] Status: ${data.status}`);
 
