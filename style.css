@@ -36,11 +36,11 @@ body {
   min-height: 100vh;
   font-family: Arial, sans-serif;
   color: #fff;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
 }
 
-/* === Ikon === */
+/* === Ikon Sosial === */
 .profile-icon,
 .email-icon,
 .insta-icon,
@@ -63,6 +63,7 @@ body {
   transform: scale(1.05);
 }
 
+/* Desktop Positions */
 .profile-icon { top: 50px; }
 .email-icon   { top: 180px; }
 .insta-icon   { top: 310px; }
@@ -194,12 +195,22 @@ body {
 
 /* === Responsif Mobile === */
 @media (max-width: 600px) {
+  .profile-icon { top: 30px; }
+  .email-icon   { top: 110px; }
+  .insta-icon   { top: 190px; }
+  .twitter-icon { top: 270px; }
+  .medium-icon  { top: 350px; }
+  .editor-button {
+    top: 430px;
+    width: 22vw;
+    max-width: 70px;
+  }
+
   .profile-icon,
   .email-icon,
   .insta-icon,
   .twitter-icon,
-  .medium-icon,
-  .editor-button {
+  .medium-icon {
     left: 5vw;
     width: 18vw;
     max-width: 60px;
