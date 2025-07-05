@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const BACKEND_URL = "https://ai-backend-production-2599.up.railway.app"; // ✅ Ubah sesuai domain backend kamu
+  const BACKEND_URL = "https://ai-backend-production-2599.up.railway.app"; // ✅ Domain backend kamu
 
   const openImageModalBtn = document.getElementById("openImageModal");
   const imageModal = document.getElementById("imageModal");
@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const status = document.getElementById("statusImage");
   const img = document.getElementById("uploadedMemeImage");
 
-  // === Ikon dan Popup ===
   const profileIcon = document.getElementById("profileIcon");
   const profilePopup = document.getElementById("profilePopup");
   const emailIcon = document.getElementById("emailIcon");
@@ -21,8 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = document.getElementById("mediumIcon");
   const mediumPopup = document.getElementById("mediumPopup");
 
-  // === Modal Editor ===
-  openImageModalBtn.addEventListener("click", () => {
+  openImageModalBtn?.addEventListener("click", () => {
     imageModal.style.display = "block";
   });
 
@@ -40,12 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Toggle Popups ===
-  profileIcon?.addEventListener("click", (e) => toggleWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup]));
-  emailIcon?.addEventListener("click", (e) => toggleWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup]));
-  instaIcon?.addEventListener("click", (e) => toggleWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup]));
-  twitterIcon?.addEventListener("click", (e) => toggleWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup]));
-  mediumIcon?.addEventListener("click", (e) => toggleWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup]));
+  profileIcon?.addEventListener("click", e => toggleWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup]));
+  emailIcon?.addEventListener("click", e => toggleWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup]));
+  instaIcon?.addEventListener("click", e => toggleWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup]));
+  twitterIcon?.addEventListener("click", e => toggleWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup]));
+  mediumIcon?.addEventListener("click", e => toggleWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup]));
 
   closeEmailBtn?.addEventListener("click", () => {
     emailPopup.style.display = "none";
@@ -57,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     hidePopups(others);
   }
 
-  window.addEventListener("click", (e) => {
+  window.addEventListener("click", e => {
     if (!profilePopup.contains(e.target) && e.target !== profileIcon) profilePopup.style.display = "none";
     if (!emailPopup.contains(e.target) && e.target !== emailIcon) emailPopup.style.display = "none";
     if (!instaPopup.contains(e.target) && e.target !== instaIcon) instaPopup.style.display = "none";
@@ -73,8 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popups.forEach(p => p.style.display = "none");
   }
 
-  // === Generate Image with AI ===
-  imageGenerateBtn.addEventListener("click", async () => {
+  imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const prompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
