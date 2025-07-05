@@ -8,7 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_URL = "https://api.bfl.ai/v1/flux-kontext-pro";
 const API_KEY = process.env.BFL_KEY; // ✅ Gunakan variabel baru untuk menghindari cache
-console.log("✅ ENV BFL_KEY:", API_KEY); // WAJIB ADA UNTUK DEBUG
+console.log("✅ ENV BFL_KEY (TYPE):", typeof API_KEY);
+console.log("✅ ENV BFL_KEY (VALUE):", API_KEY);
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '20mb' }));
