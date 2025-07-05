@@ -2,11 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+require('dotenv').config(); // ✅ Load .env
 
 const app = express();
 const PORT = 3000;
 const API_URL = "https://api.bfl.ai/v1/flux-kontext-pro";
-const API_KEY = "a87cef63-0ffe-4142-a129-303c563a749a";
+const API_KEY = process.env.API_KEY; // ✅ Ambil dari .env
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '20mb' }));
