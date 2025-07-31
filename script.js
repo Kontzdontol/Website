@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const BACKEND_URL = "https://ai-backend-production-2599.up.railway.app"; // ✅ Domain backend kamu
+
   const openImageModalBtn = document.getElementById("openImageModal");
   const imageModal = document.getElementById("imageModal");
   const imageGenerateBtn = document.getElementById("generateImageBtn");
@@ -8,22 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const profileIcon = document.getElementById("profileIcon");
   const profilePopup = document.getElementById("profilePopup");
-
   const emailIcon = document.getElementById("emailIcon");
   const emailPopup = document.getElementById("emailPopup");
   const closeEmailBtn = document.querySelector(".close-email");
-
   const instaIcon = document.getElementById("instaIcon");
   const instaPopup = document.getElementById("instaPopup");
-
   const twitterIcon = document.getElementById("twitterIcon");
   const twitterPopup = document.getElementById("twitterPopup");
-
   const mediumIcon = document.getElementById("mediumIcon");
   const mediumPopup = document.getElementById("mediumPopup");
 
-  // === Modal Editor ===
-  openImageModalBtn.addEventListener("click", () => {
+  openImageModalBtn?.addEventListener("click", () => {
     imageModal.style.display = "block";
   });
 
@@ -41,45 +38,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Toggle Popups ===
-  profileIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    togglePopup(profilePopup);
-    hidePopups([emailPopup, instaPopup, twitterPopup, mediumPopup]);
+  profileIcon?.addEventListener("click", e => toggleWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup]));
+  emailIcon?.addEventListener("click", e => toggleWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup]));
+  instaIcon?.addEventListener("click", e => toggleWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup]));
+  twitterIcon?.addEventListener("click", e => toggleWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup]));
+  mediumIcon?.addEventListener("click", e => toggleWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup]));
+
+  closeEmailBtn?.addEventListener("click", () => {
+    emailPopup.style.display = "none";
   });
 
-  emailIcon.addEventListener("click", (e) => {
+  function toggleWith(e, popup, others) {
     e.stopPropagation();
-    togglePopup(emailPopup);
-    hidePopups([profilePopup, instaPopup, twitterPopup, mediumPopup]);
-  });
-
-  instaIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    togglePopup(instaPopup);
-    hidePopups([profilePopup, emailPopup, twitterPopup, mediumPopup]);
-  });
-
-  twitterIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    togglePopup(twitterPopup);
-    hidePopups([profilePopup, emailPopup, instaPopup, mediumPopup]);
-  });
-
-  mediumIcon.addEventListener("click", (e) => {
-    e.stopPropagation();
-    togglePopup(mediumPopup);
-    hidePopups([profilePopup, emailPopup, instaPopup, twitterPopup]);
-  });
-
-  if (closeEmailBtn) {
-    closeEmailBtn.addEventListener("click", () => {
-      emailPopup.style.display = "none";
-    });
+    togglePopup(popup);
+    hidePopups(others);
   }
 
-  // Close all popups when clicking outside
-  window.addEventListener("click", (e) => {
+  window.addEventListener("click", e => {
     if (!profilePopup.contains(e.target) && e.target !== profileIcon) profilePopup.style.display = "none";
     if (!emailPopup.contains(e.target) && e.target !== emailIcon) emailPopup.style.display = "none";
     if (!instaPopup.contains(e.target) && e.target !== instaIcon) instaPopup.style.display = "none";
@@ -95,8 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popups.forEach(p => p.style.display = "none");
   }
 
-  // === Generate Image with AI ===
-  imageGenerateBtn.addEventListener("click", async () => {
+  imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const prompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
@@ -114,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const base64Image = reader.result.split(",")[1];
 
       try {
-        const res = await fetch("http://localhost:3000/generate-image", {
+        const res = await fetch(`${BACKEND_URL}/generate-image`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -148,16 +122,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   async function pollForResult(url) {
-    for (let i = 0; i < 60; i++) {
-      await new Promise(r => setTimeout(r, 1000));
-      const poll = await fetch(`http://localhost:3000/poll?url=${encodeURIComponent(url)}`);
-      const data = await poll.json();
-      console.log(`[Polling] Status: ${data.status}`);
+    try {
+      for (let i = 0; i < 60; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        const poll = await fetch(`${BACKEND_URL}/poll?url=${encodeURIComponent(url)}`);
+        const data = await poll.json();
 
-      if (data.status === "Ready") return data;
-      if (["Error", "Failed"].includes(data.status)) throw new Error(data.error || "Gagal memproses gambar.");
+        console.log(`[Polling] Status: ${data.status}`);
+        if (data.status === "Ready") return data;
+        if (["Error", "Failed"].includes(data.status)) throw new Error(data.error || "Gagal memproses gambar.");
+      }
+      throw new Error("Polling timeout.");
+    } catch (err) {
+      throw new Error("Gagal polling hasil dari backend: " + err.message);
     }
-    throw new Error("Polling timeout.");
   }
 
   function resetForm() {
