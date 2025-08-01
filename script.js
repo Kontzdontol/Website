@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const artPromptInput = get("artPrompt");
   const artImage = get("generatedArtImage");
   const artStatus = get("statusArt");
-  const modelSelect = get("modelSelect");
 
   // === Popup Elements ===
   const closeEmailBtn = document.querySelector(".close-email");
@@ -112,12 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Hyperbolic Art Generator ===
+  // === Default Art Generator with FLUX.1-dev only ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
-    const model = modelSelect.value;
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
-    if (!model) return alert("⚠️ Pilih model terlebih dahulu.");
 
     artStatus.innerText = "⏳ Menghasilkan gambar...";
     artGenerateBtn.disabled = true;
@@ -127,11 +124,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/generate-art", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model_name: model, width: 512, height: 512 })
+        body: JSON.stringify({
+          prompt,
+          model_name: "FLUX.1-dev",
+          width: 512,
+          height: 512
+        })
       });
 
       const result = await res.json();
-      if (!res.ok || !result.image_url) throw new Error(result.message || "Tidak ada output dari Hyperbolic AI");
+      if (!res.ok || !result.image_url) throw new Error(result.message || "Tidak ada output dari AI");
 
       artImage.src = result.image_url;
       artImage.style.display = "block";
@@ -175,6 +177,5 @@ document.addEventListener("DOMContentLoaded", () => {
     artImage.src = "";
     artImage.style.display = "none";
     artStatus.innerText = "";
-    modelSelect.selectedIndex = 0;
   }
 });
