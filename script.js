@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Default Art Generator with FLUX.1-dev only ===
+  // === Hyperbolic Art Generator === (Default model only)
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
@@ -128,7 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
           prompt,
           model_name: "FLUX.1-dev",
           width: 512,
-          height: 512
+          height: 512,
+          backend: "auto"
         })
       });
 
