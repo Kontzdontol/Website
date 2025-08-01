@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = fileInput.files[0];
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
 
-    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
+    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?\nContoh:\n- Tambahkan kacamata\n- Ubah latar menjadi malam\n- Jadikan wajah seperti kartun");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
