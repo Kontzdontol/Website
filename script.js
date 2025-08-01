@@ -1,91 +1,87 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 🔧 DOM Elements
-  const openImageModalBtn = document.getElementById("openImageModal");
-  const imageModal = document.getElementById("imageModal");
-  const imageGenerateBtn = document.getElementById("generateImageBtn");
-  const fileInput = document.getElementById("imageInput");
-  const status = document.getElementById("statusImage");
-  const img = document.getElementById("uploadedMemeImage");
+  // === DOM Elements ===
+  const get = id => document.getElementById(id);
+  const openImageModalBtn = get("openImageModal");
+  const imageModal = get("imageModal");
+  const imageGenerateBtn = get("generateImageBtn");
+  const fileInput = get("imageInput");
+  const status = get("statusImage");
+  const img = get("uploadedMemeImage");
 
-  const profileIcon = document.getElementById("profileIcon");
-  const profilePopup = document.getElementById("profilePopup");
-  const emailIcon = document.getElementById("emailIcon");
-  const emailPopup = document.getElementById("emailPopup");
+  const artIcon = get("artIcon");
+  const artPopup = get("artPopup");
+  const artGenerateBtn = get("generateArtBtn");
+  const artPromptInput = get("artPrompt");
+  const artImage = get("generatedArtImage");
+  const artStatus = get("statusArt");
+  const modelSelect = get("modelSelect");
+
+  const openArtModalBtn = get("openArtModalBtn");
+  const artModal = get("artModal");
+
   const closeEmailBtn = document.querySelector(".close-email");
-  const instaIcon = document.getElementById("instaIcon");
-  const instaPopup = document.getElementById("instaPopup");
-  const twitterIcon = document.getElementById("twitterIcon");
-  const twitterPopup = document.getElementById("twitterPopup");
-  const mediumIcon = document.getElementById("mediumIcon");
-  const mediumPopup = document.getElementById("mediumPopup");
-
-  const artIcon = document.getElementById("artIcon");
-  const artPopup = document.getElementById("artPopup");
-  const artGenerateBtn = document.getElementById("generateArtBtn");
-  const artPromptInput = document.getElementById("artPrompt");
-  const artImage = document.getElementById("generatedArtImage");
-  const artStatus = document.getElementById("statusArt");
-  const modelSelect = document.getElementById("modelSelect");
-
-  const openArtModalBtn = document.getElementById("openArtModalBtn");
-  const artModal = document.getElementById("artModal");
   const closeArtBtn = document.querySelector(".close-art");
+  const profileIcon = get("profileIcon");
+  const profilePopup = get("profilePopup");
+  const emailIcon = get("emailIcon");
+  const emailPopup = get("emailPopup");
+  const instaIcon = get("instaIcon");
+  const instaPopup = get("instaPopup");
+  const twitterIcon = get("twitterIcon");
+  const twitterPopup = get("twitterPopup");
+  const mediumIcon = get("mediumIcon");
+  const mediumPopup = get("mediumPopup");
 
-  // 🖼️ Modal: Image Upload
-  openImageModalBtn?.addEventListener("click", () => {
-    imageModal.style.display = "block";
-  });
+  // === Modal Show/Hide ===
+  const showModal = (modal) => modal.style.display = "block";
+  const hideModal = (modal) => modal.style.display = "none";
 
-  document.querySelectorAll(".close").forEach(btn => {
+  openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
+  openArtModalBtn?.addEventListener("click", () => showModal(artModal));
+  artIcon?.addEventListener("click", () => showModal(artModal));
+
+  document.querySelectorAll(".close").forEach(btn =>
     btn.addEventListener("click", () => {
-      imageModal.style.display = "none";
+      hideModal(imageModal);
       resetImageForm();
-    });
-  });
-
-  // 🧠 Modal: Art Generator
-  openArtModalBtn?.addEventListener("click", () => {
-    artModal.style.display = "block";
-  });
+    })
+  );
 
   closeArtBtn?.addEventListener("click", () => {
-    artModal.style.display = "none";
+    hideModal(artModal);
+    resetArtForm();
   });
 
-  // 🪟 Close modals on outside click
   window.addEventListener("click", e => {
     if (e.target === imageModal) {
-      imageModal.style.display = "none";
+      hideModal(imageModal);
       resetImageForm();
     }
     if (e.target === artModal) {
-      artModal.style.display = "none";
+      hideModal(artModal);
+      resetArtForm();
     }
     closeAllPopups(e);
   });
 
-  // 🧩 Popup toggle handlers
-  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
-  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
-  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup, artPopup]));
-  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup, artPopup]));
-  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, artPopup]));
-  artIcon?.addEventListener("click", e => togglePopupWith(e, artPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup]));
+  // === Popup toggle handlers ===
+  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
+  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
+  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
+  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
+  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
 
-  closeEmailBtn?.addEventListener("click", () => {
-    emailPopup.style.display = "none";
-  });
+  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
 
-  // ✨ AI Image Editing (BFL)
+  // === AI Image Editing (BFL) ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
-    const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
+    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
     const prompt = `Edit gambar input ini sesuai instruksi berikut: ${userPrompt}`;
-
     status.innerText = "📤 Mengunggah gambar...";
     imageGenerateBtn.disabled = true;
     imageGenerateBtn.innerText = "Processing...";
@@ -96,10 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch("/api/generate", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
@@ -122,22 +115,21 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // 🎨 Hyperbolic Art Generator
+  // === Hyperbolic Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     const model = modelSelect.value;
-    if (!prompt) return alert("⚠️ Masukkan prompt untuk menghasilkan gambar.");
+    if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
+    if (!model) return alert("⚠️ Pilih model terlebih dahulu.");
 
     artStatus.innerText = "⏳ Menghasilkan gambar...";
     artGenerateBtn.disabled = true;
     artGenerateBtn.innerText = "Loading...";
 
     try {
-      const res = await fetch("/api/generate-hyperbolic", {
+      const res = await fetch("/api/generate-art", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, model })
       });
 
@@ -156,11 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔁 Utility Functions
-  function togglePopupWith(e, popup, others) {
+  // === Utility ===
+  function togglePopupWith(e, popup) {
     e.stopPropagation();
-    popup.style.display = popup.style.display === "block" ? "none" : "block";
-    others.forEach(p => p.style.display = "none");
+    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup, artPopup];
+    allPopups.forEach(p => { if (p !== popup) p.style.display = "none"; });
+    popup.style.display = (popup.style.display === "block") ? "none" : "block";
   }
 
   function closeAllPopups(e) {
@@ -178,5 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
     img.src = "";
     img.style.display = "none";
     status.innerText = "";
+  }
+
+  function resetArtForm() {
+    artPromptInput.value = "";
+    artImage.src = "";
+    artImage.style.display = "none";
+    artStatus.innerText = "";
+    modelSelect.selectedIndex = 0;
   }
 });
