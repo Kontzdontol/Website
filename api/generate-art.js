@@ -58,11 +58,13 @@ export default async function handler(req, res) {
     });
 
     const result = await response.json();
+
     console.log("📥 [HYPERBOLIC] Response:", result);
 
     if (!response.ok) {
+      console.error("❌ Hyperbolic returned:", result); // 🔍 Logging error dari API
       return res.status(response.status).json({
-        message: result.error || result.detail || "Image generation failed.",
+        message: result.error || result.detail || "Image generation failed",
       });
     }
 
