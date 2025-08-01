@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // === DOM Elements ===
+  // === 🔧 DOM Helper ===
   const get = id => document.getElementById(id);
+
+  // === 📸 Image Editor (BFL.AI) Elements ===
   const openImageModalBtn = get("openImageModal");
   const imageModal = get("imageModal");
   const imageGenerateBtn = get("generateImageBtn");
@@ -8,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const status = get("statusImage");
   const img = get("uploadedMemeImage");
 
+  // === 🎨 Art Generator (DeepAI / Hyperbolic) Elements ===
   const artIcon = get("artIcon");
   const artModal = get("artModal");
   const artGenerateBtn = get("generateArtBtn");
@@ -16,8 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const artStatus = get("statusArt");
   const modelSelect = get("modelSelect");
 
-  const closeEmailBtn = document.querySelector(".close-email");
-  const closeArtBtn = document.querySelector(".close-art");
+  // === 🔗 Popup Socials ===
   const profileIcon = get("profileIcon");
   const profilePopup = get("profilePopup");
   const emailIcon = get("emailIcon");
@@ -29,19 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
 
-  // === Modal Show/Hide ===
-  const showModal = (modal) => {
-    modal.style.display = "block";
-  };
+  // === ❌ Modal Close Buttons ===
+  const closeEmailBtn = document.querySelector(".close-email");
+  const closeArtBtn = document.querySelector(".close-art");
+  const closeImageBtns = document.querySelectorAll(".close");
 
-  const hideModal = (modal) => {
-    modal.style.display = "none";
-  };
+  // === 🪟 Modal Logic ===
+  const showModal = modal => modal.style.display = "block";
+  const hideModal = modal => modal.style.display = "none";
 
   openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
   artIcon?.addEventListener("click", () => showModal(artModal));
 
-  document.querySelectorAll(".close").forEach(btn =>
+  closeImageBtns.forEach(btn =>
     btn.addEventListener("click", () => {
       hideModal(imageModal);
       resetImageForm();
@@ -53,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetArtForm();
   });
 
-  window.addEventListener("click", e => {
+  window.addEventListener("click", (e) => {
     if (e.target === imageModal) {
       hideModal(imageModal);
       resetImageForm();
@@ -65,19 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
     closeAllPopups(e);
   });
 
-  // === Popup toggle handlers ===
-  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
-  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
-  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
-  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
-  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
-
-  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
-
-  // === AI Image Editing (BFL.AI) ===
+  // === 📤 Image Upload & Edit (BFL.AI) ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
+
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
@@ -116,10 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Hyperbolic Art Generator ===
+  // === 🎨 Art Generation (DeepAI/Hyperbolic) ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     const model = modelSelect.value;
+
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
     if (!model) return alert("⚠️ Pilih model terlebih dahulu.");
 
@@ -149,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Utility ===
+  // === 🧠 Popup Logic ===
   function togglePopupWith(e, popup) {
     e.stopPropagation();
     const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
@@ -168,6 +163,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
   }
 
+  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
+  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
+  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
+  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
+  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
+
+  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
+
+  // === ♻️ Form Reset ===
   function resetImageForm() {
     fileInput.value = "";
     img.src = "";
