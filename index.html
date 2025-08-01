@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meme Generator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <!-- Background layers -->
   <div class="background-layer background-gif"></div>
   <div class="background-layer background-jpg"></div>
@@ -83,7 +82,7 @@
   </div>
 
   <!-- Art Button -->
-  <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
+  <img src="images/art.png" id="openArtModal" alt="Buka Art Generator" class="clickable art-button" />
 
   <!-- Art Generator Modal -->
   <div id="artModal" class="modal">
@@ -91,23 +90,17 @@
       <span class="close-art">&times;</span>
       <h2>🎨 Art Generator</h2>
 
-      <!-- Prompt input -->
-      <input type="text" id="artPrompt" placeholder="Enter your prompt..."
-             style="margin-top: 10px; width: 100%; padding: 8px;" />
+      <input type="file" id="artInput" accept="image/*" style="margin-top: 10px;" />
+      <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Upload & Generate</button>
 
-      <!-- Generate button (model pre-set to Flux.1) -->
-      <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Generate Art</button>
-
-      <!-- Result display -->
       <div id="resultAreaArt" style="margin-top: 20px;">
         <p id="statusArt" style="color: gray;"></p>
-        <img id="uploadedArtImage" src="" alt="Hasil art dari prompt"
+        <img id="uploadedArtImage" src="" alt="Hasil art dari gambar"
              style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
       </div>
     </div>
   </div>
 
-  <!-- Script -->
   <script src="script.js" defer></script>
 </body>
 </html>
