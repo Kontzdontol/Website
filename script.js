@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // 🔧 DOM Elements
   const openImageModalBtn = document.getElementById("openImageModal");
   const imageModal = document.getElementById("imageModal");
   const imageGenerateBtn = document.getElementById("generateImageBtn");
@@ -29,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const artModal = document.getElementById("artModal");
   const closeArtBtn = document.querySelector(".close-art");
 
+  // 🖼️ Modal: Image Upload
   openImageModalBtn?.addEventListener("click", () => {
     imageModal.style.display = "block";
   });
@@ -36,81 +38,71 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".close").forEach(btn => {
     btn.addEventListener("click", () => {
       imageModal.style.display = "none";
-      resetForm();
+      resetImageForm();
     });
   });
 
-  window.addEventListener("click", e => {
-    if (e.target === imageModal) {
-      imageModal.style.display = "none";
-      resetForm();
-    }
-    if (e.target === artModal) {
-      artModal.style.display = "none";
-    }
+  // 🧠 Modal: Art Generator
+  openArtModalBtn?.addEventListener("click", () => {
+    artModal.style.display = "block";
   });
 
   closeArtBtn?.addEventListener("click", () => {
     artModal.style.display = "none";
   });
 
-  openArtModalBtn?.addEventListener("click", () => {
-    artModal.style.display = "block";
+  // 🪟 Close modal on outside click
+  window.addEventListener("click", e => {
+    if (e.target === imageModal) {
+      imageModal.style.display = "none";
+      resetImageForm();
+    }
+    if (e.target === artModal) {
+      artModal.style.display = "none";
+    }
   });
 
-  profileIcon?.addEventListener("click", e => toggleWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
-  emailIcon?.addEventListener("click", e => toggleWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
-  instaIcon?.addEventListener("click", e => toggleWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup, artPopup]));
-  twitterIcon?.addEventListener("click", e => toggleWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup, artPopup]));
-  mediumIcon?.addEventListener("click", e => toggleWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, artPopup]));
-  artIcon?.addEventListener("click", e => toggleWith(e, artPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup]));
+  // 🧩 Popup toggle handlers
+  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
+  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
+  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup, artPopup]));
+  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup, artPopup]));
+  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, artPopup]));
+  artIcon?.addEventListener("click", e => togglePopupWith(e, artPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup]));
 
   closeEmailBtn?.addEventListener("click", () => {
     emailPopup.style.display = "none";
   });
 
-  function toggleWith(e, popup, others) {
-    e.stopPropagation();
-    togglePopup(popup);
-    hidePopups(others);
-  }
-
+  // ⛔ Hide all popups if clicking outside
   window.addEventListener("click", e => {
-    if (!profilePopup.contains(e.target) && e.target !== profileIcon) profilePopup.style.display = "none";
-    if (!emailPopup.contains(e.target) && e.target !== emailIcon) emailPopup.style.display = "none";
-    if (!instaPopup.contains(e.target) && e.target !== instaIcon) instaPopup.style.display = "none";
-    if (!twitterPopup.contains(e.target) && e.target !== twitterIcon) twitterPopup.style.display = "none";
-    if (!mediumPopup.contains(e.target) && e.target !== mediumIcon) mediumPopup.style.display = "none";
-    if (!artPopup.contains(e.target) && e.target !== artIcon) artPopup.style.display = "none";
+    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
+    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
+    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
+    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
+    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
+    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
+    if (isOutside(artIcon, artPopup)) artPopup.style.display = "none";
   });
 
-  function togglePopup(popup) {
-    popup.style.display = (popup.style.display === "block") ? "none" : "block";
-  }
-
-  function hidePopups(popups) {
-    popups.forEach(p => p.style.display = "none");
-  }
-
+  // ✨ AI Image Editing (BFL)
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
-    const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?\nContoh:\n- Tambahkan kacamata\n- Ubah latar menjadi malam\n- Jadikan wajah seperti kartun");
+    const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?\nContoh:\n- Tambahkan kacamata\n- Jadikan wajah kartun\n- Ubah latar jadi malam");
 
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
+    if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
     const prompt = `Edit gambar input ini sesuai instruksi berikut: ${userPrompt}`;
-    const fileSizeMB = file.size / 1024 / 1024;
-    if (fileSizeMB > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
     status.innerText = "📤 Mengunggah gambar...";
     imageGenerateBtn.disabled = true;
-    imageGenerateBtn.innerText = "Uploading...";
+    imageGenerateBtn.innerText = "Processing...";
 
     const reader = new FileReader();
     reader.onload = async () => {
       const base64Image = reader.result.split(",")[1];
-
       try {
         const res = await fetch("/api/generate", {
           method: "POST",
@@ -122,11 +114,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (!res.ok) throw new Error(await res.text());
-
         const result = await res.json();
-        if (!result?.result?.sample) throw new Error("⏰ Gambar tidak tersedia dari AI.");
 
-        img.src = result.result.sample;
+        const imageResult = result?.result?.sample;
+        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari AI.");
+
+        img.src = imageResult;
         img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
@@ -137,10 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
         imageGenerateBtn.innerText = "Upload & Generate";
       }
     };
-
     reader.readAsDataURL(file);
   });
 
+  // 🎨 DeepAI Art Generation
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     if (!prompt) return alert("⚠️ Masukkan prompt untuk menghasilkan gambar.");
@@ -173,7 +166,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  function resetForm() {
+  // 🔁 Utility Functions
+  function togglePopupWith(e, popup, others) {
+    e.stopPropagation();
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+    others.forEach(p => p.style.display = "none");
+  }
+
+  function resetImageForm() {
     fileInput.value = "";
     img.src = "";
     img.style.display = "none";
