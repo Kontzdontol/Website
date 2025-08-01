@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // === 🔧 DOM Helper ===
+  // === Utility Function ===
   const get = id => document.getElementById(id);
 
-  // === 📸 Image Editor (BFL.AI) Elements ===
+  // === Image Editor Elements ===
   const openImageModalBtn = get("openImageModal");
   const imageModal = get("imageModal");
   const imageGenerateBtn = get("generateImageBtn");
@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const status = get("statusImage");
   const img = get("uploadedMemeImage");
 
-  // === 🎨 Art Generator (DeepAI / Hyperbolic) Elements ===
-  const artIcon = get("artIcon");
+  // === Art Generator Elements ===
+  const openArtModalBtn = get("openArtModalBtn"); // ✅ PENTING: Sesuai dengan ID di HTML
   const artModal = get("artModal");
   const artGenerateBtn = get("generateArtBtn");
   const artPromptInput = get("artPrompt");
@@ -19,7 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const artStatus = get("statusArt");
   const modelSelect = get("modelSelect");
 
-  // === 🔗 Popup Socials ===
+  // === Popup Elements ===
+  const closeEmailBtn = document.querySelector(".close-email");
+  const closeArtBtn = document.querySelector(".close-art");
   const profileIcon = get("profileIcon");
   const profilePopup = get("profilePopup");
   const emailIcon = get("emailIcon");
@@ -31,19 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
 
-  // === ❌ Modal Close Buttons ===
-  const closeEmailBtn = document.querySelector(".close-email");
-  const closeArtBtn = document.querySelector(".close-art");
-  const closeImageBtns = document.querySelectorAll(".close");
-
-  // === 🪟 Modal Logic ===
+  // === Modal Show/Hide Logic ===
   const showModal = modal => modal.style.display = "block";
   const hideModal = modal => modal.style.display = "none";
 
   openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
-  artIcon?.addEventListener("click", () => showModal(artModal));
+  openArtModalBtn?.addEventListener("click", () => showModal(artModal));
 
-  closeImageBtns.forEach(btn =>
+  document.querySelectorAll(".close").forEach(btn =>
     btn.addEventListener("click", () => {
       hideModal(imageModal);
       resetImageForm();
@@ -55,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetArtForm();
   });
 
-  window.addEventListener("click", (e) => {
+  window.addEventListener("click", e => {
     if (e.target === imageModal) {
       hideModal(imageModal);
       resetImageForm();
@@ -67,11 +64,18 @@ document.addEventListener("DOMContentLoaded", () => {
     closeAllPopups(e);
   });
 
-  // === 📤 Image Upload & Edit (BFL.AI) ===
+  // === Popup toggle handlers ===
+  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
+  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
+  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
+  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
+  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
+  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
+
+  // === BFL.AI Image Editing ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
-
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
@@ -110,11 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === 🎨 Art Generation (DeepAI/Hyperbolic) ===
+  // === Hyperbolic Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     const model = modelSelect.value;
-
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
     if (!model) return alert("⚠️ Pilih model terlebih dahulu.");
 
@@ -144,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === 🧠 Popup Logic ===
+  // === Utility Functions ===
   function togglePopupWith(e, popup) {
     e.stopPropagation();
     const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
@@ -163,15 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
   }
 
-  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
-  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
-  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
-  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
-  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
-
-  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
-
-  // === ♻️ Form Reset ===
   function resetImageForm() {
     fileInput.value = "";
     img.src = "";
