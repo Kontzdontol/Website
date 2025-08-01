@@ -127,7 +127,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/generate-art", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model_name: model, width: 512, height: 512 })
+        body: JSON.stringify({
+          prompt,
+          model_name: model,
+          width: 512,
+          height: 512,
+          backend: "auto"
+        })
       });
 
       const result = await res.json();

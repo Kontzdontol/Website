@@ -1,5 +1,3 @@
-// pages/api/generate-art.js
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Only POST requests allowed" });
@@ -18,12 +16,14 @@ export default async function handler(req, res) {
     style_preset = ""
   } = req.body;
 
-  // Validasi Prompt
+  // Validasi prompt
   if (!prompt || typeof prompt !== "string" || prompt.trim() === "") {
     return res.status(400).json({ message: "Prompt is required and must be a non-empty string." });
   }
 
   const apiKey = process.env.HYPERBOLIC_API_KEY;
+  const baseUrl = process.env.HYPERBOLIC_BASE_URL || "https://api.hyperbolic.xyz/v1";
+
   if (!apiKey) {
     console.error("❌ Missing HYPERBOLIC_API_KEY in environment.");
     return res.status(500).json({ message: "Server configuration error: API key missing." });
@@ -33,22 +33,22 @@ export default async function handler(req, res) {
     const payload = {
       model_name,
       prompt,
-      height,
       width,
+      height,
       backend,
       negative_prompt,
       steps,
       cfg_scale,
-      sampler,
+      sampler
     };
 
-    if (style_preset && style_preset !== "") {
+    if (style_preset && style_preset.trim() !== "") {
       payload.style_preset = style_preset;
     }
 
-    console.log("📤 Sending payload to Hyperbolic:", payload);
+    console.log("📤 [HYPERBOLIC] Request Payload:", payload);
 
-    const response = await fetch("https://api.hyperbolic.xyz/v1/image/generation", {
+    const response = await fetch(`${baseUrl}/image/generation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,30 +57,31 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-    console.log("📥 Received response from Hyperbolic:", data);
+    const result = await response.json();
+    console.log("📥 [HYPERBOLIC] Response:", result);
 
     if (!response.ok) {
-      console.error("🔴 Hyperbolic API error:", data);
       return res.status(response.status).json({
-        message: data.error || data.detail || "Generation failed from Hyperbolic API.",
+        message: result.error || result.detail || "Image generation failed.",
       });
     }
 
-    const image_url = Array.isArray(data.images) ? data.images[0]?.image : null;
+    const image_url = Array.isArray(result.images)
+      ? result.images[0]?.image || result.images[0]?.url
+      : result.image || result.url || result.result?.image_url;
 
     if (!image_url) {
-      console.error("❌ No image returned in API response:", data);
-      return res.status(500).json({ message: "No image URL returned from API." });
+      console.error("❌ No image URL in response:", result);
+      return res.status(500).json({ message: "No image returned from API." });
     }
 
     return res.status(200).json({ image_url });
 
-  } catch (err) {
-    console.error("💥 Internal server error:", err);
+  } catch (error) {
+    console.error("💥 Internal server error:", error);
     return res.status(500).json({
       message: "Internal server error",
-      error: err.message,
+      error: error.message,
     });
   }
 }
