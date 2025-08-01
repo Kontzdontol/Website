@@ -40,13 +40,14 @@ body {
   position: relative;
 }
 
-/* === Ikon Sosial & Editor - Desktop === */
+/* === Ikon Sosial, Editor & Art - Desktop === */
 .profile-icon,
 .email-icon,
 .insta-icon,
 .twitter-icon,
 .medium-icon,
-.editor-button {
+.editor-button,
+.art-button {
   position: fixed;
   left: 2vw;
   width: 80px;
@@ -61,7 +62,8 @@ body {
 .insta-icon:hover,
 .twitter-icon:hover,
 .medium-icon:hover,
-.editor-button:hover {
+.editor-button:hover,
+.art-button:hover {
   transform: scale(1.1);
   filter: brightness(1.15);
 }
@@ -71,16 +73,16 @@ body {
 .insta-icon   { top: 260px; }
 .twitter-icon { top: 360px; }
 .medium-icon  { top: 460px; }
-.editor-button {
-  top: 560px;
-}
+.editor-button { top: 560px; }
+.art-button    { top: 620px; }
 
 /* === Popup Umum === */
 .profile-popup,
 .email-popup,
 .insta-popup,
 .twitter-popup,
-.medium-popup {
+.medium-popup,
+.art-popup {
   display: none;
   position: fixed;
   left: 300px;
@@ -94,17 +96,20 @@ body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   animation: fadeIn 0.3s ease-in-out;
 }
+
 .profile-popup { top: 50px; }
 .email-popup   { top: 180px; }
 .insta-popup   { top: 310px; }
 .twitter-popup { top: 440px; }
 .medium-popup  { top: 570px; }
+.art-popup     { top: 640px; }
 
 .profile-popup h3,
 .email-popup h3,
 .insta-popup h3,
 .twitter-popup h3,
-.medium-popup h3 {
+.medium-popup h3,
+.art-popup h3 {
   margin-top: 0;
   font-size: 20px;
 }
@@ -119,7 +124,8 @@ body {
 .email-popup p,
 .insta-popup p,
 .twitter-popup p,
-.medium-popup p {
+.medium-popup p,
+.art-popup p {
   font-size: 18px;
   margin: 0;
   word-break: break-word;
@@ -136,17 +142,19 @@ body {
 
 .insta-popup a,
 .twitter-popup a,
-.medium-popup a {
+.medium-popup a,
+.art-popup a {
   color: #000;
   text-decoration: none;
 }
 .insta-popup a:hover,
 .twitter-popup a:hover,
-.medium-popup a:hover {
+.medium-popup a:hover,
+.art-popup a:hover {
   text-decoration: underline;
 }
 
-/* === Modal / Editor === */
+/* === Modal / Editor & Art === */
 .modal {
   display: none;
   position: fixed;
@@ -170,14 +178,16 @@ body {
   from { opacity: 0; transform: translateY(-20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.close {
+.close,
+.close-art {
   color: red;
   font-size: 24px;
   float: right;
   cursor: pointer;
   font-weight: bold;
 }
-.close:hover {
+.close:hover,
+.close-art:hover {
   color: darkred;
 }
 
@@ -190,6 +200,12 @@ body {
   .medium-icon  { top: 350px; }
   .editor-button {
     top: 440px;
+    left: 4vw;
+    width: 22vw;
+    max-width: 70px;
+  }
+  .art-button {
+    top: 520px;
     left: 4vw;
     width: 22vw;
     max-width: 70px;
@@ -209,10 +225,15 @@ body {
   .email-popup,
   .insta-popup,
   .twitter-popup,
-  .medium-popup {
+  .medium-popup,
+  .art-popup {
     width: 90vw;
     left: 5vw;
     padding: 12px;
+  }
+
+  .art-popup {
+    top: 600px;
   }
 
   .profile-popup img {
@@ -223,7 +244,8 @@ body {
   .email-popup p,
   .insta-popup p,
   .twitter-popup p,
-  .medium-popup p {
+  .medium-popup p,
+  .art-popup p {
     font-size: 17px;
   }
 }

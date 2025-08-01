@@ -18,6 +18,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = document.getElementById("mediumIcon");
   const mediumPopup = document.getElementById("mediumPopup");
 
+  const artIcon = document.getElementById("artIcon");
+  const artPopup = document.getElementById("artPopup");
+  const artGenerateBtn = document.getElementById("generateArtBtn");
+  const artPromptInput = document.getElementById("artPrompt");
+  const artImage = document.getElementById("generatedArtImage");
+  const artStatus = document.getElementById("statusArt");
+
+  const openArtModalBtn = document.getElementById("openArtModal");
+  const artModal = document.getElementById("artModal");
+  const closeArtBtn = document.querySelector(".close-art");
+
   openImageModalBtn?.addEventListener("click", () => {
     imageModal.style.display = "block";
   });
@@ -34,13 +45,25 @@ document.addEventListener("DOMContentLoaded", () => {
       imageModal.style.display = "none";
       resetForm();
     }
+    if (e.target === artModal) {
+      artModal.style.display = "none";
+    }
   });
 
-  profileIcon?.addEventListener("click", e => toggleWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup]));
-  emailIcon?.addEventListener("click", e => toggleWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup]));
-  instaIcon?.addEventListener("click", e => toggleWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup]));
-  twitterIcon?.addEventListener("click", e => toggleWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup]));
-  mediumIcon?.addEventListener("click", e => toggleWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup]));
+  closeArtBtn?.addEventListener("click", () => {
+    artModal.style.display = "none";
+  });
+
+  openArtModalBtn?.addEventListener("click", () => {
+    artModal.style.display = "block";
+  });
+
+  profileIcon?.addEventListener("click", e => toggleWith(e, profilePopup, [emailPopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
+  emailIcon?.addEventListener("click", e => toggleWith(e, emailPopup, [profilePopup, instaPopup, twitterPopup, mediumPopup, artPopup]));
+  instaIcon?.addEventListener("click", e => toggleWith(e, instaPopup, [profilePopup, emailPopup, twitterPopup, mediumPopup, artPopup]));
+  twitterIcon?.addEventListener("click", e => toggleWith(e, twitterPopup, [profilePopup, emailPopup, instaPopup, mediumPopup, artPopup]));
+  mediumIcon?.addEventListener("click", e => toggleWith(e, mediumPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, artPopup]));
+  artIcon?.addEventListener("click", e => toggleWith(e, artPopup, [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup]));
 
   closeEmailBtn?.addEventListener("click", () => {
     emailPopup.style.display = "none";
@@ -58,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!instaPopup.contains(e.target) && e.target !== instaIcon) instaPopup.style.display = "none";
     if (!twitterPopup.contains(e.target) && e.target !== twitterIcon) twitterPopup.style.display = "none";
     if (!mediumPopup.contains(e.target) && e.target !== mediumIcon) mediumPopup.style.display = "none";
+    if (!artPopup.contains(e.target) && e.target !== artIcon) artPopup.style.display = "none";
   });
 
   function togglePopup(popup) {
@@ -115,6 +139,39 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     reader.readAsDataURL(file);
+  });
+
+  artGenerateBtn?.addEventListener("click", async () => {
+    const prompt = artPromptInput.value.trim();
+    if (!prompt) return alert("⚠️ Masukkan prompt untuk menghasilkan gambar.");
+
+    artStatus.innerText = "⏳ Menghasilkan gambar...";
+    artGenerateBtn.disabled = true;
+    artGenerateBtn.innerText = "Loading...";
+
+    try {
+      const res = await fetch("https://api.deepai.org/api/pixel-art-generator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "api-key": "f25ee646-69a4-45e3-be9b-6db19096117b"
+        },
+        body: new URLSearchParams({ text: prompt })
+      });
+
+      const result = await res.json();
+      if (!result.output_url) throw new Error("Tidak ada output dari DeepAI");
+
+      artImage.src = result.output_url;
+      artImage.style.display = "block";
+      artStatus.innerText = "✅ Gambar berhasil dibuat.";
+    } catch (err) {
+      console.error(err);
+      artStatus.innerText = "❌ Gagal menghasilkan gambar.";
+    } finally {
+      artGenerateBtn.disabled = false;
+      artGenerateBtn.innerText = "Generate Art";
+    }
   });
 
   function resetForm() {

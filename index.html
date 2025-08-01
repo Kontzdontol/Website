@@ -81,6 +81,26 @@
     </div>
   </div>
 
+  <!-- Art Button -->
+  <img src="images/art.png" id="openArtModal" alt="Buka Art Generator" class="clickable art-button" />
+
+  <!-- Art Generator Modal -->
+  <div id="artModal" class="modal">
+    <div class="modal-content">
+      <span class="close-art">&times;</span>
+      <h2>🎨 Art Generator</h2>
+
+      <input type="text" id="artPrompt" placeholder="Enter your prompt..." style="margin-top: 10px; width: 100%; padding: 8px;" />
+      <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Generate Art</button>
+
+      <div id="resultAreaArt" style="margin-top: 20px;">
+        <p id="statusArt" style="color: gray;"></p>
+        <img id="uploadedArtImage" src="" alt="Hasil art dari prompt"
+             style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
+      </div>
+    </div>
+  </div>
+
   <script src="script.js" defer></script>
 </body>
 </html>
