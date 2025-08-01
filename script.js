@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
 
-  // === Modal Show/Hide Logic ===
+  // === Modal Logic ===
   const showModal = modal => modal.style.display = "block";
   const hideModal = modal => modal.style.display = "none";
 
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
   closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
 
-  // === BFL.AI Image Editing ===
+  // === BFL.AI Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Hyperbolic Art Generator === (Default model only)
+  // === Pixel Art Generator === (tanpa model manual)
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
@@ -126,10 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt,
-          model_name: "FLUX.1-dev",
           width: 512,
-          height: 512,
-          backend: "auto"
+          height: 512
         })
       });
 
