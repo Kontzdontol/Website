@@ -18,6 +18,7 @@ export default async function handler(req, res) {
     style_preset = ""
   } = req.body;
 
+  // Validasi Prompt
   if (!prompt || typeof prompt !== "string" || prompt.trim() === "") {
     return res.status(400).json({ message: "Prompt is required and must be a non-empty string." });
   }
@@ -41,10 +42,11 @@ export default async function handler(req, res) {
       sampler,
     };
 
-    // Optional style_preset
     if (style_preset && style_preset !== "") {
       payload.style_preset = style_preset;
     }
+
+    console.log("📤 Sending payload to Hyperbolic:", payload);
 
     const response = await fetch("https://api.hyperbolic.xyz/v1/image/generation", {
       method: "POST",
@@ -56,6 +58,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+    console.log("📥 Received response from Hyperbolic:", data);
 
     if (!response.ok) {
       console.error("🔴 Hyperbolic API error:", data);
