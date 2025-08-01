@@ -70,10 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
-    const prompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
-    if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
-    if (!prompt || prompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
+    const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?\nContoh:\n- Tambahkan kacamata\n- Ubah latar menjadi malam\n- Jadikan wajah seperti kartun");
 
+    if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
+    if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
+
+    const prompt = `Edit gambar input ini sesuai instruksi berikut: ${userPrompt}`;
     const fileSizeMB = file.size / 1024 / 1024;
     if (fileSizeMB > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
@@ -98,8 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!res.ok) throw new Error(await res.text());
 
         const result = await res.json();
-
         if (!result?.result?.sample) throw new Error("⏰ Gambar tidak tersedia dari AI.");
+
         img.src = result.result.sample;
         img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
