@@ -1,135 +1,193 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Elemen untuk fitur editor.png
-  const imageInput = document.getElementById("imageInput");
-  const promptInput = document.getElementById("imagePrompt");
-  const generateBtn = document.getElementById("generateImageBtn");
-  const resultImage = document.getElementById("uploadedMemeImage");
-  const statusImage = document.getElementById("statusImage");
+  const get = id => document.getElementById(id);
 
-  // Elemen untuk fitur art.png
-  const artPrompt = document.getElementById("artPrompt");
-  const generateArtBtn = document.getElementById("generateArtBtn");
-  const resultArtImage = document.getElementById("generatedArtImage");
-  const statusArt = document.getElementById("statusArt");
+  // === Elements ===
+  const openImageModalBtn = get("openImageModal");
+  const imageModal = get("imageModal");
+  const imageGenerateBtn = get("generateImageBtn");
+  const fileInput = get("imageInput");
+  const status = get("statusImage");
+  const img = get("uploadedMemeImage");
 
-  // === FITUR 1: Image Editor ===
-  generateBtn?.addEventListener("click", async () => {
-    const file = imageInput.files[0];
-    const prompt = promptInput.value.trim();
+  const openArtModalBtn = get("openArtModalBtn");
+  const artModal = get("artModal");
+  const artGenerateBtn = get("generateArtBtn");
+  const artPromptInput = get("artPrompt");
+  const artImage = get("generatedArtImage");
+  const artStatus = get("statusArt");
 
-    if (!file) {
-      statusImage.textContent = "❌ Silakan unggah gambar terlebih dahulu.";
-      return;
+  const closeEmailBtn = document.querySelector(".close-email");
+  const closeArtBtn = document.querySelector(".close-art");
+  const profileIcon = get("profileIcon");
+  const profilePopup = get("profilePopup");
+  const emailIcon = get("emailIcon");
+  const emailPopup = get("emailPopup");
+  const instaIcon = get("instaIcon");
+  const instaPopup = get("instaPopup");
+  const twitterIcon = get("twitterIcon");
+  const twitterPopup = get("twitterPopup");
+  const mediumIcon = get("mediumIcon");
+  const mediumPopup = get("mediumPopup");
+
+  const showModal = modal => modal.style.display = "block";
+  const hideModal = modal => modal.style.display = "none";
+
+  openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
+  openArtModalBtn?.addEventListener("click", () => showModal(artModal));
+
+  document.querySelectorAll(".close").forEach(btn =>
+    btn.addEventListener("click", () => {
+      hideModal(imageModal);
+      resetImageForm();
+    })
+  );
+
+  closeArtBtn?.addEventListener("click", () => {
+    hideModal(artModal);
+    resetArtForm();
+  });
+
+  window.addEventListener("click", e => {
+    if (e.target === imageModal) {
+      hideModal(imageModal);
+      resetImageForm();
     }
-
-    if (!prompt) {
-      statusImage.textContent = "❌ Prompt tidak boleh kosong.";
-      return;
+    if (e.target === artModal) {
+      hideModal(artModal);
+      resetArtForm();
     }
+    closeAllPopups(e);
+  });
 
-    statusImage.textContent = "⏳ Mengirim permintaan...";
-    resultImage.style.display = "none";
+  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
+  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
+  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
+  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
+  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
+  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
+
+  // === BFL.AI Editor ===
+  imageGenerateBtn?.addEventListener("click", async () => {
+    const file = fileInput.files[0];
+    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
+
+    if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
+    if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
+    if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
+
+    const prompt = `Edit gambar input ini sesuai instruksi berikut: ${userPrompt}`;
+    status.innerText = "📤 Mengunggah gambar...";
+    imageGenerateBtn.disabled = true;
+    imageGenerateBtn.innerText = "Processing...";
 
     const reader = new FileReader();
     reader.onload = async () => {
-      const base64 = reader.result.split(",")[1];
+      const base64Image = reader.result.split(",")[1];
 
       try {
-        const response = await fetch("/api/generate", {
+        const res = await fetch("/api/generate", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prompt,
-            input_image: base64,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
-        const data = await response.json();
-        console.log("📥 [EDITOR] Response:", data);
+        const result = await res.json();
+        console.log("📥 [BFL] Response:", result);
 
-        if (!response.ok) {
-          statusImage.textContent = `❌ Gagal: ${data.message || "Permintaan gagal"}`;
-          return;
-        }
+        if (!res.ok) throw new Error(result.message || result.error || "Gagal memproses gambar.");
 
-        let imageUrl = null;
+        const imageResult =
+          result?.result?.sample ||
+          result?.result?.image_url ||
+          result?.image_url ||
+          result?.output?.image_url;
 
-        // Deteksi hasil output BFL.AI
-        if (data.result?.sample) {
-          imageUrl = data.result.sample;
-        } else if (data.result?.image) {
-          imageUrl = data.result.image;
-        } else if (typeof data.result === "string" && data.result.startsWith("data:image")) {
-          imageUrl = data.result;
-        } else if (data.image_url) {
-          imageUrl = data.image_url;
-        }
+        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
 
-        if (imageUrl) {
-          resultImage.src = imageUrl;
-          resultImage.style.display = "block";
-          statusImage.textContent = "✅ Gambar berhasil dibuat!";
-        } else {
-          statusImage.textContent = "❌ Gagal: Respons tidak berisi gambar.";
-          console.warn("⚠️ Tidak ditemukan URL gambar dalam response:", data);
-        }
-      } catch (error) {
-        console.error("💥 [EDITOR] Error:", error);
-        statusImage.textContent = "❌ Terjadi kesalahan saat menghubungi server.";
+        img.src = imageResult;
+        img.style.display = "block";
+        status.innerText = "✅ Gambar berhasil diubah!";
+      } catch (err) {
+        console.error("❌ Error:", err);
+        status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan saat menghubungi AI.");
+      } finally {
+        imageGenerateBtn.disabled = false;
+        imageGenerateBtn.innerText = "Upload & Generate";
       }
     };
-
     reader.readAsDataURL(file);
   });
 
-  // === FITUR 2: Pixel Art Generator ===
-  generateArtBtn?.addEventListener("click", async () => {
-    const prompt = artPrompt.value.trim();
+  // === Pixel Art Generator ===
+  artGenerateBtn?.addEventListener("click", async () => {
+    const prompt = artPromptInput.value.trim();
+    if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
 
-    if (!prompt) {
-      statusArt.textContent = "❌ Prompt tidak boleh kosong.";
-      return;
-    }
-
-    statusArt.textContent = "⏳ Menghasilkan gambar...";
-    resultArtImage.style.display = "none";
+    artStatus.innerText = "⏳ Menghasilkan gambar...";
+    artGenerateBtn.disabled = true;
+    artGenerateBtn.innerText = "Loading...";
 
     try {
-      const response = await fetch("/api/generate-art", {
+      const res = await fetch("/api/generate-art", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt,
-          width: 512,
-          height: 512,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, width: 512, height: 512 })
       });
 
-      const data = await response.json();
-      console.log("📥 [ART] Response:", data);
+      const result = await res.json();
+      console.log("🎯 Response dari /api/generate-art:", result);
 
-      if (!response.ok) {
-        statusArt.textContent = `❌ Gagal: ${data.message || "Permintaan gagal"}`;
-        return;
-      }
+      const imageUrl =
+        result.image_url ||
+        result.url ||
+        result.result?.image_url ||
+        result.output?.image_url ||
+        result.image ||
+        result.images?.[0];
 
-      const imageUrl = data.output || data.image_url || data.result?.image;
+      if (!res.ok || !imageUrl) throw new Error(result.message || "Tidak ada output gambar dari AI.");
 
-      if (imageUrl) {
-        resultArtImage.src = imageUrl;
-        resultArtImage.style.display = "block";
-        statusArt.textContent = "✅ Gambar berhasil dibuat!";
-      } else {
-        statusArt.textContent = "❌ Gagal: Tidak ada gambar dikembalikan.";
-        console.warn("⚠️ Tidak ditemukan URL gambar:", data);
-      }
-    } catch (error) {
-      console.error("💥 [ART] Error:", error);
-      statusArt.textContent = "❌ Terjadi kesalahan saat mengirim permintaan.";
+      artImage.src = imageUrl;
+      artImage.style.display = "block";
+      artStatus.innerText = "✅ Gambar berhasil dibuat.";
+    } catch (err) {
+      console.error("❌ Error:", err);
+      artStatus.innerText = "❌ Gagal menghasilkan gambar.";
+    } finally {
+      artGenerateBtn.disabled = false;
+      artGenerateBtn.innerText = "Generate Art";
     }
   });
+
+  function togglePopupWith(e, popup) {
+    e.stopPropagation();
+    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
+    allPopups.forEach(p => {
+      if (p !== popup) p.style.display = "none";
+    });
+    popup.style.display = (popup.style.display === "block") ? "none" : "block";
+  }
+
+  function closeAllPopups(e) {
+    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
+    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
+    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
+    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
+    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
+    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
+  }
+
+  function resetImageForm() {
+    fileInput.value = "";
+    img.src = "";
+    img.style.display = "none";
+    status.innerText = "";
+  }
+
+  function resetArtForm() {
+    artPromptInput.value = "";
+    artImage.src = "";
+    artImage.style.display = "none";
+    artStatus.innerText = "";
+  }
 });
