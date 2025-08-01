@@ -22,12 +22,11 @@ export default async function handler(req, res) {
     prompt: prompt.trim(),
     width: 1024,
     height: 1024,
-    steps: 25,
+    steps: 30,
     cfg_scale: 7,
     sampler: "Euler a",
+    enable_refiner: false,
   };
-
-  console.log("📤 [HYPERBOLIC] Payload:", payload);
 
   try {
     const response = await fetch(`${baseUrl}/image/generation`, {
@@ -41,27 +40,30 @@ export default async function handler(req, res) {
 
     const result = await response.json();
 
-    console.log("📥 [HYPERBOLIC] Response:", result);
-
-    if (!response.ok) {
+    if (!response.ok || !result) {
+      console.error("⚠️ API Error Response:", result);
       return res.status(response.status).json({
-        message: result.message || result.error || result.detail || "Image generation failed",
+        message: result?.message || result?.error || "Failed to generate image",
       });
     }
 
-    const image_url =
-      Array.isArray(result.images)
-        ? result.images[0]?.image || result.images[0]?.url
-        : result.image || result.url || result.result?.image_url || result.output?.image_url;
+    // Coba ekstrak gambar dari berbagai kemungkinan struktur
+    const image_url = result?.images?.[0]?.image || 
+                      result?.images?.[0]?.url || 
+                      result?.image || 
+                      result?.url || 
+                      result?.result?.image_url || 
+                      result?.output?.image_url;
 
     if (!image_url) {
+      console.error("❌ Image URL not found in response:", result);
       return res.status(500).json({ message: "No image returned from API." });
     }
 
     return res.status(200).json({ image_url });
 
   } catch (error) {
-    console.error("💥 Server Error:", error);
+    console.error("💥 Unexpected Error:", error);
     return res.status(500).json({
       message: "Internal server error",
       error: error.message,

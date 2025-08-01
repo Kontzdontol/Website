@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!res.ok) throw new Error(await res.text());
         const result = await res.json();
-        const imageResult = result?.result?.sample;
+        const imageResult = result?.result?.sample || result?.result?.image_url || result?.image_url;
         if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari AI.");
 
         img.src = imageResult;
@@ -133,7 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await res.json();
       console.log("🎯 Response dari /api/generate-art:", result);
 
-      const imageUrl = result.images?.[0];
+      const imageUrl =
+        result.image_url ||
+        result.url ||
+        result.result?.image_url ||
+        result.output?.image_url ||
+        result.image ||
+        result.images?.[0];
+
       if (!res.ok || !imageUrl) throw new Error(result.message || "Tidak ada output gambar dari AI.");
 
       artImage.src = imageUrl;
