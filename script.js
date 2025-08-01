@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const BACKEND_URL = "https://ai-backend-production-2599.up.railway.app"; // ✅ Domain backend kamu
-
   const openImageModalBtn = document.getElementById("openImageModal");
   const imageModal = document.getElementById("imageModal");
   const imageGenerateBtn = document.getElementById("generateImageBtn");
@@ -88,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const base64Image = reader.result.split(",")[1];
 
       try {
-        const res = await fetch(`${BACKEND_URL}/generate-image`, {
+        const res = await fetch("/api/generate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -99,13 +97,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!res.ok) throw new Error(await res.text());
 
-        const { polling_url } = await res.json();
-        if (!polling_url) throw new Error("Polling URL tidak tersedia.");
+        const result = await res.json();
 
-        status.innerText = "⏳ Memproses gambar di AI...";
-        const result = await pollForResult(polling_url);
-
-        if (!result?.result?.sample) throw new Error("⏰ Timeout atau gambar tidak tersedia.");
+        if (!result?.result?.sample) throw new Error("⏰ Gambar tidak tersedia dari AI.");
         img.src = result.result.sample;
         img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
@@ -120,23 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     reader.readAsDataURL(file);
   });
-
-  async function pollForResult(url) {
-    try {
-      for (let i = 0; i < 60; i++) {
-        await new Promise(r => setTimeout(r, 1000));
-        const poll = await fetch(`${BACKEND_URL}/poll?url=${encodeURIComponent(url)}`);
-        const data = await poll.json();
-
-        console.log(`[Polling] Status: ${data.status}`);
-        if (data.status === "Ready") return data;
-        if (["Error", "Failed"].includes(data.status)) throw new Error(data.error || "Gagal memproses gambar.");
-      }
-      throw new Error("Polling timeout.");
-    } catch (err) {
-      throw new Error("Gagal polling hasil dari backend: " + err.message);
-    }
-  }
 
   function resetForm() {
     fileInput.value = "";
