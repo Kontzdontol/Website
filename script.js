@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const artStatus = document.getElementById("statusArt");
   const modelSelect = document.getElementById("modelSelect");
 
-  const openArtModalBtn = document.getElementById("openArtModal");
+  const openArtModalBtn = document.getElementById("openArtModalBtn");
   const artModal = document.getElementById("artModal");
   const closeArtBtn = document.querySelector(".close-art");
 
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     artModal.style.display = "none";
   });
 
-  // 🪟 Close modal on outside click
+  // 🪟 Close modals on outside click
   window.addEventListener("click", e => {
     if (e.target === imageModal) {
       imageModal.style.display = "none";
@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === artModal) {
       artModal.style.display = "none";
     }
+    closeAllPopups(e);
   });
 
   // 🧩 Popup toggle handlers
@@ -75,22 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
     emailPopup.style.display = "none";
   });
 
-  // ⛔ Hide all popups if clicking outside
-  window.addEventListener("click", e => {
-    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
-    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
-    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
-    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
-    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
-    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
-    if (isOutside(artIcon, artPopup)) artPopup.style.display = "none";
-  });
-
   // ✨ AI Image Editing (BFL)
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
-
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
@@ -116,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!res.ok) throw new Error(await res.text());
         const result = await res.json();
-
         const imageResult = result?.result?.sample;
         if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari AI.");
 
@@ -173,6 +161,16 @@ document.addEventListener("DOMContentLoaded", () => {
     e.stopPropagation();
     popup.style.display = popup.style.display === "block" ? "none" : "block";
     others.forEach(p => p.style.display = "none");
+  }
+
+  function closeAllPopups(e) {
+    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
+    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
+    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
+    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
+    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
+    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
+    if (isOutside(artIcon, artPopup)) artPopup.style.display = "none";
   }
 
   function resetImageForm() {
