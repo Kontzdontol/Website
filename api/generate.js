@@ -15,21 +15,23 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Step 1: Submit the image edit request
     const submission = await fetch("https://api.bfl.ai/v1/flux-kontext-pro", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-key": apiKey,
+        Accept: "application/json",
       },
       body: JSON.stringify({
         prompt: prompt.trim(),
-        image: input_image,
+        input_image, // ✅ ini perbaikan utamanya
       }),
     });
 
     if (!submission.ok) {
       const errorText = await submission.text();
-      console.error("❌ Error from FLUX.1:", errorText);
+      console.error("❌ Error from BFL:", errorText);
       return res.status(submission.status).json({ error: errorText });
     }
 
@@ -40,10 +42,14 @@ export default async function handler(req, res) {
       return res.status(502).json({ error: "No polling URL received from BFL API", raw: job });
     }
 
-    const pollForResult = async (url, attempts = 10, delay = 2000) => {
+    // Step 2: Poll for result
+    const pollForResult = async (url, attempts = 20, delay = 1000) => {
       for (let i = 0; i < attempts; i++) {
         const response = await fetch(url, {
-          headers: { "x-key": apiKey },
+          headers: {
+            "x-key": apiKey,
+            Accept: "application/json",
+          },
         });
 
         if (!response.ok) {
@@ -52,14 +58,12 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        const imageUrl =
-          data?.result?.sample ||
-          data?.data?.image_url ||
-          data?.image ||
-          (typeof data === "string" && data.startsWith("data:image/") ? data : null);
+        if (data.status === "Ready" && data.result?.sample) {
+          return data.result.sample;
+        }
 
-        if (imageUrl) {
-          return imageUrl;
+        if (data.status === "Failed" || data.status === "Error") {
+          throw new Error("Image generation failed on server.");
         }
 
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -72,7 +76,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       result: {
-        sample: imageUrl, // atau ganti jadi `image: imageUrl` jika ingin berbeda
+        sample: imageUrl,
       },
     });
   } catch (err) {
