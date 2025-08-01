@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // === Utility Function ===
   const get = id => document.getElementById(id);
 
   // === Image Editor Elements ===
@@ -11,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const img = get("uploadedMemeImage");
 
   // === Art Generator Elements ===
-  const openArtModalBtn = get("openArtModalBtn"); // ✅ PENTING: Sesuai dengan ID di HTML
+  const openArtModalBtn = get("openArtModalBtn");
   const artModal = get("artModal");
   const artGenerateBtn = get("generateArtBtn");
   const artPromptInput = get("artPrompt");
@@ -64,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     closeAllPopups(e);
   });
 
-  // === Popup toggle handlers ===
   profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
   emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
   instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
@@ -129,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/generate-art", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model_name: model })
+        body: JSON.stringify({ prompt, model_name: model, width: 512, height: 512 })
       });
 
       const result = await res.json();
@@ -147,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Utility Functions ===
   function togglePopupWith(e, popup) {
     e.stopPropagation();
     const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];

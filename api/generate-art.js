@@ -34,6 +34,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+    console.log("🔎 Hyperbolic response:", JSON.stringify(data, null, 2)); // Untuk debug
 
     if (!response.ok) {
       console.error("🔴 Hyperbolic API error:", data);
@@ -42,12 +43,27 @@ export default async function handler(req, res) {
       });
     }
 
-    const image_url = Array.isArray(data.images) && data.images[0]?.image;
-    if (!image_url) {
-      return res.status(500).json({ message: "No image URL returned from API." });
+    let image_url = null;
+
+    if (Array.isArray(data.images) && data.images[0]?.image) {
+      image_url = data.images[0].image;
+
+      // Jika base64 image
+      if (image_url.startsWith("data:image")) {
+        return res.status(200).json({ image_url });
+      }
+
+      // Jika http/https URL
+      if (/^https?:\/\//.test(image_url)) {
+        return res.status(200).json({ image_url });
+      }
+
+      // Jika tidak cocok format
+      console.error("⚠️ Invalid image format:", image_url);
+      return res.status(500).json({ message: "Invalid image format from Hyperbolic API." });
     }
 
-    return res.status(200).json({ image_url });
+    return res.status(500).json({ message: "No image returned from API." });
 
   } catch (err) {
     console.error("💥 Internal server error:", err);
