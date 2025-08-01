@@ -6,8 +6,8 @@ export default async function handler(req, res) {
   const {
     prompt,
     model_name = "SDXL1.0-base",
-    width = 512,
-    height = 512,
+    width = 1024, // ✅ Ganti ke resolusi yang valid
+    height = 1024,
     backend = "auto",
     negative_prompt = "",
     steps = 25,
@@ -16,20 +16,14 @@ export default async function handler(req, res) {
     style_preset = ""
   } = req.body;
 
-  // Validasi prompt
   if (!prompt || typeof prompt !== "string" || prompt.trim() === "") {
     return res.status(400).json({ message: "Prompt is required and must be a non-empty string." });
   }
 
-  // Model fallback mapping
-  const modelMap = {
-    "Flux.1": "FLUX.1-dev",
-    "SDXL": "SDXL1.0-base",
-    "default": "SD1.5"
-  };
-
-  // Gunakan model yang benar atau fallback ke default
-  const finalModel = modelMap[model_name] || model_name;
+  let finalModel = model_name;
+  if (model_name === "Flux.1") {
+    finalModel = "FLUX.1-dev";
+  }
 
   const apiKey = process.env.HYPERBOLIC_API_KEY;
   const baseUrl = process.env.HYPERBOLIC_BASE_URL || "https://api.hyperbolic.xyz/v1";
@@ -70,40 +64,6 @@ export default async function handler(req, res) {
     const result = await response.json();
 
     console.log("📥 [HYPERBOLIC] Response:", result);
-
-    // Jika error 403 karena model tidak tersedia, fallback ke model default
-    if (result.code === 40301 || result.message?.includes("not available")) {
-      console.warn("⚠️ Model tidak tersedia, fallback ke model default:", modelMap["default"]);
-      payload.model_name = modelMap["default"];
-
-      const fallbackResponse = await fetch(`${baseUrl}/image/generation`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const fallbackResult = await fallbackResponse.json();
-      console.log("📥 [Fallback Response]:", fallbackResult);
-
-      if (!fallbackResponse.ok) {
-        return res.status(fallbackResponse.status).json({
-          message: fallbackResult.error || fallbackResult.detail || "Fallback image generation failed",
-        });
-      }
-
-      const fallbackImageUrl = Array.isArray(fallbackResult.images)
-        ? fallbackResult.images[0]?.image || fallbackResult.images[0]?.url
-        : fallbackResult.image || fallbackResult.url || fallbackResult.result?.image_url;
-
-      if (!fallbackImageUrl) {
-        return res.status(500).json({ message: "No image returned from fallback model." });
-      }
-
-      return res.status(200).json({ image_url: fallbackImageUrl });
-    }
 
     if (!response.ok) {
       console.error("❌ Hyperbolic returned:", result);
