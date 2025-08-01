@@ -9,15 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const img = get("uploadedMemeImage");
 
   const artIcon = get("artIcon");
-  const artPopup = get("artPopup");
+  const artModal = get("artModal");
   const artGenerateBtn = get("generateArtBtn");
   const artPromptInput = get("artPrompt");
   const artImage = get("generatedArtImage");
   const artStatus = get("statusArt");
   const modelSelect = get("modelSelect");
-
-  const openArtModalBtn = get("openArtModalBtn");
-  const artModal = get("artModal");
 
   const closeEmailBtn = document.querySelector(".close-email");
   const closeArtBtn = document.querySelector(".close-art");
@@ -33,11 +30,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumPopup = get("mediumPopup");
 
   // === Modal Show/Hide ===
-  const showModal = (modal) => modal.style.display = "block";
-  const hideModal = (modal) => modal.style.display = "none";
+  const showModal = (modal) => {
+    modal.style.display = "block";
+  };
+
+  const hideModal = (modal) => {
+    modal.style.display = "none";
+  };
 
   openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
-  openArtModalBtn?.addEventListener("click", () => showModal(artModal));
   artIcon?.addEventListener("click", () => showModal(artModal));
 
   document.querySelectorAll(".close").forEach(btn =>
@@ -73,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
 
-  // === AI Image Editing (BFL) ===
+  // === AI Image Editing (BFL.AI) ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/generate-art", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model })
+        body: JSON.stringify({ prompt, model_name: model })
       });
 
       const result = await res.json();
@@ -151,8 +152,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // === Utility ===
   function togglePopupWith(e, popup) {
     e.stopPropagation();
-    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup, artPopup];
-    allPopups.forEach(p => { if (p !== popup) p.style.display = "none"; });
+    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
+    allPopups.forEach(p => {
+      if (p !== popup) p.style.display = "none";
+    });
     popup.style.display = (popup.style.display === "block") ? "none" : "block";
   }
 
@@ -163,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
     if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
     if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
-    if (isOutside(artIcon, artPopup)) artPopup.style.display = "none";
   }
 
   function resetImageForm() {
