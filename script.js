@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
 
-  // === Modal Logic ===
   const showModal = modal => modal.style.display = "block";
   const hideModal = modal => modal.style.display = "none";
 
@@ -111,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Pixel Art Generator === (tanpa model manual)
+  // === Pixel Art Generator === (via generate-art.js)
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
@@ -132,13 +131,16 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const result = await res.json();
-      if (!res.ok || !result.image_url) throw new Error(result.message || "Tidak ada output dari AI");
+      console.log("🎯 Response dari /api/generate-art:", result);
 
-      artImage.src = result.image_url;
+      const imageUrl = result.images?.[0];
+      if (!res.ok || !imageUrl) throw new Error(result.message || "Tidak ada output gambar dari AI.");
+
+      artImage.src = imageUrl;
       artImage.style.display = "block";
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error:", err);
       artStatus.innerText = "❌ Gagal menghasilkan gambar.";
     } finally {
       artGenerateBtn.disabled = false;
