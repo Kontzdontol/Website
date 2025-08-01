@@ -6,9 +6,9 @@ export default async function handler(req, res) {
   const {
     prompt,
     model_name = "SDXL1.0-base",
-    width = 1024, // ✅ Ganti ke resolusi yang valid
+    width = 1024,
     height = 1024,
-    backend = "auto",
+    backend = "",
     negative_prompt = "",
     steps = 25,
     cfg_scale = 7,
@@ -39,7 +39,6 @@ export default async function handler(req, res) {
       prompt,
       width,
       height,
-      backend,
       negative_prompt,
       steps,
       cfg_scale,
@@ -48,6 +47,10 @@ export default async function handler(req, res) {
 
     if (style_preset && style_preset.trim() !== "") {
       payload.style_preset = style_preset;
+    }
+
+    if (backend && backend !== "auto") {
+      payload.backend = backend;
     }
 
     console.log("📤 [HYPERBOLIC] Request Payload:", payload);
@@ -68,7 +71,7 @@ export default async function handler(req, res) {
     if (!response.ok) {
       console.error("❌ Hyperbolic returned:", result);
       return res.status(response.status).json({
-        message: result.error || result.detail || "Image generation failed",
+        message: result.message || result.error || result.detail || "Image generation failed",
       });
     }
 
