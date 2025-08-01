@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const artPromptInput = document.getElementById("artPrompt");
   const artImage = document.getElementById("generatedArtImage");
   const artStatus = document.getElementById("statusArt");
+  const modelSelect = document.getElementById("modelSelect");
 
   const openArtModalBtn = document.getElementById("openArtModal");
   const artModal = document.getElementById("artModal");
@@ -88,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✨ AI Image Editing (BFL)
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
-    const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?\nContoh:\n- Tambahkan kacamata\n- Jadikan wajah kartun\n- Ubah latar jadi malam");
+    const userPrompt = window.prompt("Apa yang ingin kamu ubah dari gambar ini?");
 
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
@@ -133,9 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // 🎨 DeepAI Art Generation
+  // 🎨 Hyperbolic Art Generator
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
+    const model = modelSelect.value;
     if (!prompt) return alert("⚠️ Masukkan prompt untuk menghasilkan gambar.");
 
     artStatus.innerText = "⏳ Menghasilkan gambar...";
@@ -143,16 +145,16 @@ document.addEventListener("DOMContentLoaded", () => {
     artGenerateBtn.innerText = "Loading...";
 
     try {
-      const res = await fetch("/api/generate-art", {
+      const res = await fetch("/api/generate-hyperbolic", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt, model })
       });
 
       const result = await res.json();
-      if (!res.ok || !result.image_url) throw new Error(result.message || "Tidak ada output dari DeepAI");
+      if (!res.ok || !result.image_url) throw new Error(result.message || "Tidak ada output dari Hyperbolic AI");
 
       artImage.src = result.image_url;
       artImage.style.display = "block";
