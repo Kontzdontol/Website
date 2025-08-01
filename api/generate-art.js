@@ -24,7 +24,6 @@ export default async function handler(req, res) {
     const result = await response.json();
 
     if (!response.ok) {
-      // Jika error dari DeepAI (misal kuota habis, api key salah, dsb)
       console.error("DeepAI API error:", result);
       return res.status(response.status).json({
         message: result?.error || "Error from DeepAI",

@@ -150,19 +150,18 @@ document.addEventListener("DOMContentLoaded", () => {
     artGenerateBtn.innerText = "Loading...";
 
     try {
-      const res = await fetch("https://api.deepai.org/api/pixel-art-generator", {
+      const res = await fetch("/api/generate-art", {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "api-key": "f25ee646-69a4-45e3-be9b-6db19096117b"
+          "Content-Type": "application/json"
         },
-        body: new URLSearchParams({ text: prompt })
+        body: JSON.stringify({ prompt })
       });
 
       const result = await res.json();
-      if (!result.output_url) throw new Error("Tidak ada output dari DeepAI");
+      if (!res.ok || !result.image_url) throw new Error(result.message || "Tidak ada output dari DeepAI");
 
-      artImage.src = result.output_url;
+      artImage.src = result.image_url;
       artImage.style.display = "block";
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
