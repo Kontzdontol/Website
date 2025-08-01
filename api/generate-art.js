@@ -21,6 +21,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: "Prompt is required and must be a non-empty string." });
   }
 
+  // Normalisasi model_name agar cocok dengan yang didukung Hyperbolic
+  let finalModel = model_name;
+  if (model_name === "Flux.1") {
+    finalModel = "FLUX.1-dev";
+  }
+
   const apiKey = process.env.HYPERBOLIC_API_KEY;
   const baseUrl = process.env.HYPERBOLIC_BASE_URL || "https://api.hyperbolic.xyz/v1";
 
@@ -31,7 +37,7 @@ export default async function handler(req, res) {
 
   try {
     const payload = {
-      model_name,
+      model_name: finalModel,
       prompt,
       width,
       height,
@@ -62,7 +68,7 @@ export default async function handler(req, res) {
     console.log("📥 [HYPERBOLIC] Response:", result);
 
     if (!response.ok) {
-      console.error("❌ Hyperbolic returned:", result); // 🔍 Logging error dari API
+      console.error("❌ Hyperbolic returned:", result);
       return res.status(response.status).json({
         message: result.error || result.detail || "Image generation failed",
       });
