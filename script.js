@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const get = id => document.getElementById(id);
 
-  // === Image Editor Elements ===
+  // === Elements ===
   const openImageModalBtn = get("openImageModal");
   const imageModal = get("imageModal");
   const imageGenerateBtn = get("generateImageBtn");
@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const status = get("statusImage");
   const img = get("uploadedMemeImage");
 
-  // === Art Generator Elements ===
   const openArtModalBtn = get("openArtModalBtn");
   const artModal = get("artModal");
   const artGenerateBtn = get("generateArtBtn");
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const artImage = get("generatedArtImage");
   const artStatus = get("statusArt");
 
-  // === Popup Elements ===
   const closeEmailBtn = document.querySelector(".close-email");
   const closeArtBtn = document.querySelector(".close-art");
   const profileIcon = get("profileIcon");
@@ -72,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
+
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
@@ -84,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const reader = new FileReader();
     reader.onload = async () => {
       const base64Image = reader.result.split(",")[1];
+
       try {
         const res = await fetch("/api/generate", {
           method: "POST",
@@ -91,17 +91,25 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
-        if (!res.ok) throw new Error(await res.text());
         const result = await res.json();
-        const imageResult = result?.result?.sample || result?.result?.image_url || result?.image_url;
-        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari AI.");
+        console.log("📥 [BFL] Response:", result);
+
+        if (!res.ok) throw new Error(result.message || result.error || "Gagal memproses gambar.");
+
+        const imageResult =
+          result?.result?.sample ||
+          result?.result?.image_url ||
+          result?.image_url ||
+          result?.output?.image_url;
+
+        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
 
         img.src = imageResult;
         img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
         console.error("❌ Error:", err);
-        status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan.");
+        status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan saat menghubungi AI.");
       } finally {
         imageGenerateBtn.disabled = false;
         imageGenerateBtn.innerText = "Upload & Generate";
@@ -110,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Pixel Art Generator === (via generate-art.js)
+  // === Pixel Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
@@ -123,11 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/generate-art", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          width: 512,
-          height: 512
-        })
+        body: JSON.stringify({ prompt, width: 512, height: 512 })
       });
 
       const result = await res.json();
