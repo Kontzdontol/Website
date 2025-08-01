@@ -7,11 +7,11 @@ export default async function handler(req, res) {
   const apiKey = process.env.BFL_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: "API key not configured on server" });
+    return res.status(500).json({ error: "API key is missing in server config" });
   }
 
-  if (!prompt || !input_image) {
-    return res.status(400).json({ error: "Missing 'prompt' or 'input_image'" });
+  if (!prompt || typeof prompt !== "string" || !input_image || typeof input_image !== "string") {
+    return res.status(400).json({ error: "Invalid or missing 'prompt' or 'input_image'" });
   }
 
   try {
@@ -22,14 +22,14 @@ export default async function handler(req, res) {
         "x-key": apiKey,
       },
       body: JSON.stringify({
-        prompt,
+        prompt: prompt.trim(),
         image: input_image,
       }),
     });
 
     if (!submission.ok) {
       const errorText = await submission.text();
-      console.error("❌ BFL Submission Error:", errorText);
+      console.error("❌ Error from FLUX.1:", errorText);
       return res.status(submission.status).json({ error: errorText });
     }
 
@@ -37,45 +37,48 @@ export default async function handler(req, res) {
     const pollingUrl = job?.polling_url;
 
     if (!pollingUrl) {
-      return res.status(502).json({ error: "No polling URL returned by BFL API", raw: job });
+      return res.status(502).json({ error: "No polling URL received from BFL API", raw: job });
     }
 
-    // Polling helper
     const pollForResult = async (url, attempts = 10, delay = 2000) => {
       for (let i = 0; i < attempts; i++) {
-        const pollRes = await fetch(url, {
+        const response = await fetch(url, {
           headers: { "x-key": apiKey },
         });
 
-        if (!pollRes.ok) {
-          throw new Error(`Polling failed: ${await pollRes.text()}`);
+        if (!response.ok) {
+          throw new Error(`Polling failed: ${await response.text()}`);
         }
 
-        const pollData = await pollRes.json();
+        const data = await response.json();
+
         const imageUrl =
-          pollData?.result?.sample ||
-          pollData?.data?.image_url ||
-          pollData?.image ||
-          (typeof pollData === "string" && pollData.startsWith("data:image/") ? pollData : null);
+          data?.result?.sample ||
+          data?.data?.image_url ||
+          data?.image ||
+          (typeof data === "string" && data.startsWith("data:image/") ? data : null);
 
-        if (imageUrl) return imageUrl;
+        if (imageUrl) {
+          return imageUrl;
+        }
 
-        // Jika belum ada hasil, tunggu lalu coba lagi
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
 
       throw new Error("Timeout: No image generated after polling.");
     };
 
-    // Tunggu hasilnya
     const imageUrl = await pollForResult(pollingUrl);
 
     return res.status(200).json({
-      result: { sample: imageUrl },
+      result: {
+        sample: imageUrl, // atau ganti jadi `image: imageUrl` jika ingin berbeda
+      },
     });
-
-  } catch (error) {
-    console.error("💥 Server error:", error);
-    return res.status(500).json({ error: error.message || "Internal Server Error" });
+  } catch (err) {
+    console.error("💥 Unexpected error:", err);
+    return res.status(500).json({
+      error: err.message || "Unknown error occurred during image generation",
+    });
   }
 }
