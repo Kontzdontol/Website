@@ -27,8 +27,6 @@
 
   <!-- Email Icon -->
   <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
-
-  <!-- Email Popup -->
   <div class="email-popup" id="emailPopup">
     <h3>📧 Contact Email</h3>
     <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
@@ -37,8 +35,6 @@
 
   <!-- Instagram Icon -->
   <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
-
-  <!-- Instagram Popup -->
   <div class="insta-popup" id="instaPopup">
     <h3>📸 Instagram</h3>
     <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
@@ -46,8 +42,6 @@
 
   <!-- Twitter Icon -->
   <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
-
-  <!-- Twitter Popup -->
   <div class="twitter-popup" id="twitterPopup">
     <h3>🐦 X account</h3>
     <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
@@ -55,8 +49,6 @@
 
   <!-- Medium Icon -->
   <img src="images/medium.png" alt="Medium Icon" class="medium-icon" id="mediumIcon" />
-
-  <!-- Medium Popup -->
   <div class="medium-popup" id="mediumPopup">
     <h3>✍️ Medium</h3>
     <p><a href="https://medium.com/@hamzahnorsihab07" target="_blank">@hamzahnorsihab07</a></p>
@@ -72,11 +64,16 @@
       <h2>🖼️ Photo Editor</h2>
 
       <input type="file" id="imageInput" accept="image/*" style="margin-top: 10px;" />
-      <button id="generateImageBtn" style="margin-top: 10px; padding: 10px 20px;">Upload & Generate</button>
+      
+      <div id="promptContainer" style="display: none; margin-top: 10px;">
+        <label for="imagePrompt">Masukkan prompt untuk edit gambar:</label>
+        <input type="text" id="imagePrompt" placeholder="Contoh: ubah jadi kartun" style="width: 100%; padding: 8px;" />
+        <button id="generateImageBtn" style="margin-top: 10px; padding: 10px 20px;">Upload & Generate</button>
+      </div>
 
       <div id="resultAreaImage" style="margin-top: 20px;">
         <p id="statusImage" style="color: gray;"></p>
-        <img id="uploadedMemeImage" src="" alt="Hasil meme dari gambar"
+        <img id="uploadedMemeImage" src="" alt="Hasil edit gambar"
              style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
       </div>
     </div>
@@ -91,14 +88,10 @@
       <span class="close-art">&times;</span>
       <h2>🎨 Art Generator</h2>
 
-      <!-- Prompt input -->
       <input type="text" id="artPrompt" placeholder="Enter your prompt..."
              style="margin-top: 10px; width: 100%; padding: 8px;" />
-
-      <!-- Generate button -->
       <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Generate Art</button>
 
-      <!-- Result display -->
       <div id="resultAreaArt" style="margin-top: 20px;">
         <p id="statusArt" style="color: gray;"></p>
         <img id="uploadedArtImage" src="" alt="Hasil art dari prompt"

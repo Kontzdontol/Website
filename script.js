@@ -69,9 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // === BFL.AI Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
-    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
-
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
+
+    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?");
     if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await res.json();
         console.log("📥 [BFL] Response:", result);
 
-        if (!res.ok) throw new Error(result.message || result.error || "Gagal memproses gambar.");
+        if (!res.ok || !result?.result) throw new Error(result.message || result.error || "Gagal memproses gambar.");
 
         const imageResult =
           result?.result?.sample ||
@@ -115,6 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
         imageGenerateBtn.innerText = "Upload & Generate";
       }
     };
+
+    reader.onerror = () => {
+      status.innerText = "❌ Gagal membaca gambar.";
+      imageGenerateBtn.disabled = false;
+      imageGenerateBtn.innerText = "Upload & Generate";
+    };
+
     reader.readAsDataURL(file);
   });
 
