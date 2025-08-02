@@ -95,16 +95,26 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
-        const result = await res.json();
+        const text = await res.text();
+        let result;
+
+        try {
+          result = JSON.parse(text);
+        } catch {
+          throw new Error("❌ Response dari server bukan JSON valid.");
+        }
+
         console.log("📥 [BFL] Response:", result);
 
-        if (!res.ok || !result?.result) throw new Error(result.message || result.error || "Gagal memproses gambar.");
+        if (!res.ok || !result?.result) {
+          throw new Error(result?.message || result?.error || "Gagal memproses gambar.");
+        }
 
         const imageResult =
-          result?.result?.sample ||
-          result?.result?.image_url ||
-          result?.image_url ||
-          result?.output?.image_url;
+          result.result?.sample ||
+          result.result?.image_url ||
+          result.image_url ||
+          result.output?.image_url;
 
         if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
 
@@ -150,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const text = await res.text();
       let result = {};
+
       try {
         result = JSON.parse(text);
       } catch {
@@ -166,7 +177,9 @@ document.addEventListener("DOMContentLoaded", () => {
         result.image ||
         result.images?.[0];
 
-      if (!res.ok || !imageUrl) throw new Error(result.message || "Tidak ada output gambar dari AI.");
+      if (!res.ok || !imageUrl) {
+        throw new Error(result.message || "Tidak ada output gambar dari AI.");
+      }
 
       if (artImage) {
         artImage.src = imageUrl;
