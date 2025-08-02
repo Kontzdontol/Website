@@ -66,17 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
   twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
   mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
 
-  // === Trigger prompt input muncul setelah gambar dipilih ===
-  fileInput.addEventListener("change", () => {
+  fileInput?.addEventListener("change", () => {
     promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
   });
 
   // === Photo Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
-    const file = fileInput.files[0];
+    const file = fileInput?.files?.[0];
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
 
-    const userPrompt = promptInput.value.trim();
+    const userPrompt = promptInput?.value.trim();
     if (!userPrompt) return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
@@ -109,8 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
 
-        img.src = imageResult;
-        img.style.display = "block";
+        if (img) {
+          img.src = imageResult;
+          img.style.display = "block";
+        }
+
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
         console.error("❌ Error:", err);
@@ -132,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
-    const prompt = artPromptInput.value.trim();
+    const prompt = artPromptInput?.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
 
     artStatus.innerText = "⏳ Menghasilkan gambar...";
@@ -166,8 +168,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!res.ok || !imageUrl) throw new Error(result.message || "Tidak ada output gambar dari AI.");
 
-      artImage.src = imageUrl;
-      artImage.style.display = "block";
+      if (artImage) {
+        artImage.src = imageUrl;
+        artImage.style.display = "block";
+      }
+
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
       console.error("❌ Error:", err);
@@ -184,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     allPopups.forEach(p => {
       if (p !== popup) p.style.display = "none";
     });
-    popup.style.display = (popup.style.display === "block") ? "none" : "block";
+    if (popup) popup.style.display = (popup.style.display === "block") ? "none" : "block";
   }
 
   function closeAllPopups(e) {
@@ -197,18 +202,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resetImageForm() {
-    fileInput.value = "";
-    promptInput.value = "";
-    promptContainer.style.display = "none";
-    img.src = "";
-    img.style.display = "none";
-    status.innerText = "";
+    if (fileInput) fileInput.value = "";
+    if (promptInput) promptInput.value = "";
+    if (promptContainer) promptContainer.style.display = "none";
+    if (img) {
+      img.src = "";
+      img.style.display = "none";
+    }
+    if (status) status.innerText = "";
   }
 
   function resetArtForm() {
-    artPromptInput.value = "";
-    artImage.src = "";
-    artImage.style.display = "none";
-    artStatus.innerText = "";
+    if (artPromptInput) artPromptInput.value = "";
+    if (artImage) {
+      artImage.src = "";
+      artImage.style.display = "none";
+    }
+    if (artStatus) artStatus.innerText = "";
   }
 });

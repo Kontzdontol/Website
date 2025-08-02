@@ -104,6 +104,42 @@
   </div>
 
   <!-- Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadedArtImage = document.getElementById('uploadedArtImage');
+      const statusArt = document.getElementById('statusArt');
+
+      document.getElementById('generateArtBtn').addEventListener('click', async () => {
+        const prompt = document.getElementById('artPrompt').value;
+        if (!prompt) return;
+
+        statusArt.textContent = 'Generating...';
+        uploadedArtImage.style.display = 'none';
+
+        try {
+          const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+          });
+
+          const result = await response.json();
+          if (result.image_url) {
+            uploadedArtImage.src = result.image_url;
+            uploadedArtImage.style.display = 'block';
+            statusArt.textContent = '';
+          } else {
+            throw new Error('Image URL not returned');
+          }
+        } catch (error) {
+          console.error(error);
+          statusArt.textContent = 'Error generating image.';
+        }
+      });
+    });
+  </script>
   <script src="script.js" defer></script>
 </body>
 </html>
