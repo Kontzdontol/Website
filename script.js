@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const artModal = get("artModal");
   const artGenerateBtn = get("generateArtBtn");
   const artPromptInput = get("artPrompt");
-  const artImage = get("generatedArtImage");
+  const artImage = get("uploadedArtImage");
   const artStatus = get("statusArt");
 
   const closeArtBtn = get("closeArtModal");
