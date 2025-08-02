@@ -39,15 +39,16 @@ export default async function handler(req, res) {
     });
 
     const result = await response.json();
-    console.log("📦 API Response:", JSON.stringify(result, null, 2));
+    console.log("📦 API Response:", JSON.stringify(result, null, 2)); // DEBUG RESPONSE LOG
 
-    if (!response.ok || !result) {
+    if (!response.ok) {
       console.error("⚠️ API Error Response:", result);
       return res.status(response.status).json({
         message: result?.message || result?.error || "Failed to generate image",
       });
     }
 
+    // Coba ambil beberapa kemungkinan field yang berisi URL
     const possibleUrls = [
       result?.images?.[0]?.image,
       result?.images?.[0]?.url,
