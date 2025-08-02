@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Only POST requests allowed" });
   }
 
-  const { prompt } = req.body;
+  const { prompt, width, height } = req.body;
 
   if (!prompt || typeof prompt !== "string" || prompt.trim() === "") {
     return res.status(400).json({ message: "Prompt is required and must be a non-empty string." });
@@ -20,8 +20,8 @@ export default async function handler(req, res) {
   const payload = {
     model_name: "FLUX.1-dev",
     prompt: prompt.trim(),
-    width: 1024,
-    height: 1024,
+    width: typeof width === "number" ? width : 1024,
+    height: typeof height === "number" ? height : 1024,
     steps: 30,
     cfg_scale: 7,
     sampler: "Euler a",
@@ -47,12 +47,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // Coba ekstrak gambar dari berbagai kemungkinan struktur
-    const image_url = result?.images?.[0]?.image || 
-                      result?.images?.[0]?.url || 
-                      result?.image || 
-                      result?.url || 
-                      result?.result?.image_url || 
+    const image_url = result?.images?.[0]?.image ||
+                      result?.images?.[0]?.url ||
+                      result?.image ||
+                      result?.url ||
+                      result?.result?.image_url ||
                       result?.output?.image_url;
 
     if (!image_url) {
@@ -61,7 +60,6 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({ image_url });
-
   } catch (error) {
     console.error("💥 Unexpected Error:", error);
     return res.status(500).json({
