@@ -16,40 +16,44 @@
   <img src="images/profile.png" alt="Profile Icon" class="profile-icon" id="profileIcon" />
 
   <!-- Profile Popup -->
-  <div class="profile-popup" id="profilePopup">
+  <div class="popup profile-popup" id="profilePopup">
+    <span class="close-popup" data-target="profilePopup">&times;</span>
     <img src="images/profile-photo.jpg" alt="Foto Profil" class="popup-photo" />
     <h3>Hamzah Nor Sihab</h3>
     <p>
       Hi, I'm Hamzah from Kudus, Indonesia, an economics graduate with a strong passion for learning new things.
-      I’m a self-taught enthusiast in the fields of cryptocurrency and Web3, constantly exploring and experimenting with emerging technologies.
+      I’m a self-taught enthusiast in the fields of cryptocurrency and Web3.
     </p>
   </div>
 
   <!-- Email Icon -->
   <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
-  <div class="email-popup" id="emailPopup">
+  <div class="popup email-popup" id="emailPopup">
+    <span class="close-popup" data-target="emailPopup">&times;</span>
     <h3>📧 Contact Email</h3>
     <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
-    <span class="close-email">&times;</span>
   </div>
 
   <!-- Instagram Icon -->
   <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
-  <div class="insta-popup" id="instaPopup">
+  <div class="popup insta-popup" id="instaPopup">
+    <span class="close-popup" data-target="instaPopup">&times;</span>
     <h3>📸 Instagram</h3>
     <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
   </div>
 
   <!-- Twitter Icon -->
   <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
-  <div class="twitter-popup" id="twitterPopup">
+  <div class="popup twitter-popup" id="twitterPopup">
+    <span class="close-popup" data-target="twitterPopup">&times;</span>
     <h3>🐦 X account</h3>
     <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
   </div>
 
   <!-- Medium Icon -->
   <img src="images/medium.png" alt="Medium Icon" class="medium-icon" id="mediumIcon" />
-  <div class="medium-popup" id="mediumPopup">
+  <div class="popup medium-popup" id="mediumPopup">
+    <span class="close-popup" data-target="mediumPopup">&times;</span>
     <h3>✍️ Medium</h3>
     <p><a href="https://medium.com/@hamzahnorsihab07" target="_blank">@hamzahnorsihab07</a></p>
   </div>
@@ -58,9 +62,9 @@
   <img src="images/editor.png" id="openImageModal" alt="Buka Editor" class="clickable editor-button" />
 
   <!-- Image Editor Modal -->
-  <div id="imageModal" class="modal">
+  <div id="imageModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-content">
-      <span class="close">&times;</span>
+      <span class="close" id="closeImageModal">&times;</span>
       <h2>🖼️ Photo Editor</h2>
 
       <input type="file" id="imageInput" accept="image/*" style="margin-top: 10px;" />
@@ -79,17 +83,16 @@
     </div>
   </div>
 
-  <!-- Art Button -->
+  <!-- Art Generator Button -->
   <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
 
   <!-- Art Generator Modal -->
-  <div id="artModal" class="modal">
+  <div id="artModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-content">
-      <span class="close-art">&times;</span>
+      <span class="close-art" id="closeArtModal">&times;</span>
       <h2>🎨 Art Generator</h2>
 
-      <input type="text" id="artPrompt" placeholder="Enter your prompt..."
-             style="margin-top: 10px; width: 100%; padding: 8px;" />
+      <input type="text" id="artPrompt" placeholder="Enter your prompt..." style="margin-top: 10px; width: 100%; padding: 8px;" />
       <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Generate Art</button>
 
       <div id="resultAreaArt" style="margin-top: 20px;">

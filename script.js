@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileInput = get("imageInput");
   const status = get("statusImage");
   const img = get("uploadedMemeImage");
+  const promptContainer = get("promptContainer");
+  const promptInput = get("imagePrompt");
 
   const openArtModalBtn = get("openArtModalBtn");
   const artModal = get("artModal");
@@ -16,8 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const artImage = get("generatedArtImage");
   const artStatus = get("statusArt");
 
-  const closeEmailBtn = document.querySelector(".close-email");
-  const closeArtBtn = document.querySelector(".close-art");
+  const closeArtBtn = get("closeArtModal");
+  const closeImageBtn = get("closeImageModal");
+
   const profileIcon = get("profileIcon");
   const profilePopup = get("profilePopup");
   const emailIcon = get("emailIcon");
@@ -35,12 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
   openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
   openArtModalBtn?.addEventListener("click", () => showModal(artModal));
 
-  document.querySelectorAll(".close").forEach(btn =>
-    btn.addEventListener("click", () => {
-      hideModal(imageModal);
-      resetImageForm();
-    })
-  );
+  closeImageBtn?.addEventListener("click", () => {
+    hideModal(imageModal);
+    resetImageForm();
+  });
 
   closeArtBtn?.addEventListener("click", () => {
     hideModal(artModal);
@@ -64,15 +65,23 @@ document.addEventListener("DOMContentLoaded", () => {
   instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
   twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
   mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
-  closeEmailBtn?.addEventListener("click", () => emailPopup.style.display = "none");
 
-  // === BFL.AI Editor ===
+  // === Trigger prompt input muncul setelah gambar dipilih ===
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      promptContainer.style.display = "block";
+    } else {
+      promptContainer.style.display = "none";
+    }
+  });
+
+  // === Photo Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput.files[0];
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
 
-    const userPrompt = prompt("Apa yang ingin kamu ubah dari gambar ini?\nContoh:\n- Tambahkan kacamata\n- Ubah latar menjadi malam\n- Jadikan wajah seperti kartun");
-    if (!userPrompt || userPrompt.trim() === "") return alert("⚠️ Prompt tidak boleh kosong.");
+    const userPrompt = promptInput.value.trim();
+    if (!userPrompt) return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
     const prompt = `Edit gambar input ini sesuai instruksi berikut: ${userPrompt}`;
@@ -125,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Pixel Art Generator ===
+  // === Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
@@ -186,6 +195,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetImageForm() {
     fileInput.value = "";
+    promptInput.value = "";
+    promptContainer.style.display = "none";
     img.src = "";
     img.style.display = "none";
     status.innerText = "";
