@@ -68,11 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === Trigger prompt input muncul setelah gambar dipilih ===
   fileInput.addEventListener("change", () => {
-    if (fileInput.files.length > 0) {
-      promptContainer.style.display = "block";
-    } else {
-      promptContainer.style.display = "none";
-    }
+    promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
   });
 
   // === Photo Editor ===
@@ -150,7 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ prompt, width: 512, height: 512 })
       });
 
-      const result = await res.json();
+      const text = await res.text();
+      let result = {};
+      try {
+        result = JSON.parse(text);
+      } catch {
+        throw new Error("❌ Response tidak dapat dibaca. Mungkin bukan JSON valid.");
+      }
+
       console.log("🎯 Response dari /api/generate-art:", result);
 
       const imageUrl =
@@ -168,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
       console.error("❌ Error:", err);
-      artStatus.innerText = "❌ Gagal menghasilkan gambar.";
+      artStatus.innerText = err.message || "⚠️ Gagal menghasilkan gambar.";
     } finally {
       artGenerateBtn.disabled = false;
       artGenerateBtn.innerText = "Generate Art";
