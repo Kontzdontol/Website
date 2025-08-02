@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     });
 
     const result = await response.json();
-    console.log("📦 API Response:", JSON.stringify(result, null, 2)); // DEBUG RESPONSE LOG
+    console.log("📦 API Response:", JSON.stringify(result, null, 2));
 
     if (!response.ok) {
       console.error("⚠️ API Error Response:", result);
@@ -48,24 +48,15 @@ export default async function handler(req, res) {
       });
     }
 
-    // Coba ambil beberapa kemungkinan field yang berisi URL
-    const possibleUrls = [
-      result?.images?.[0]?.image,
-      result?.images?.[0]?.url,
-      result?.image,
-      result?.url,
-      result?.result?.image_url,
-      result?.output?.image_url
-    ];
+    const base64Image = result?.images?.[0]?.image;
 
-    const image_url = possibleUrls.find(url => typeof url === "string" && url.startsWith("http"));
-
-    if (!image_url) {
-      console.error("❌ No valid image URL found in response:", result);
+    if (!base64Image || typeof base64Image !== "string") {
+      console.error("❌ No valid image found in response:", result);
       return res.status(500).json({ message: "No image returned from API." });
     }
 
-    console.log("✅ Extracted image_url:", image_url);
+    const image_url = `data:image/png;base64,${base64Image}`;
+    console.log("✅ Generated Base64 image URL");
     return res.status(200).json({ image_url });
 
   } catch (error) {
