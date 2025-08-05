@@ -2,59 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meme Generator</title>
   <link rel="stylesheet" href="style.css" />
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0E5Q5ZHERX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-0E5Q5ZHERX');
-  </script>
 </head>
 <body>
   <!-- Background Layers -->
   <div class="background-layer background-gif"></div>
   <div class="background-layer background-jpg"></div>
 
-  <!-- Profile Icon -->
-  <img src="images/profile.png" alt="Profile Icon" class="profile-icon" id="profileIcon" />
-  <div class="popup profile-popup" id="profilePopup">
-    <span class="close-popup" data-popup="profilePopup">&times;</span>
-    <img src="images/profile-photo.jpg" alt="Foto Profil" class="popup-photo" />
-    <h3>Hamzah Nor Sihab</h3>
-    <p>Hi, I'm Hamzah from Kudus, Indonesia, an economics graduate with a strong passion for learning new things. I’m a self-taught enthusiast in the fields of cryptocurrency and Web3.</p>
+  <!-- Icons with Popups -->
+  <div class="icon-popup-container">
+    <img src="images/profile.png" class="profile-icon clickable" id="profileIcon" alt="Profile">
+    <div class="profile-popup popup" id="profilePopup">
+      <span class="close-popup" data-popup="profilePopup">&times;</span>
+      <img src="images/profile-photo.jpg" alt="Foto Profil" class="popup-photo" />
+      <h3>Hamzah Nor Sihab</h3>
+      <p>Hi, I'm Hamzah from Kudus, Indonesia, an economics graduate with a strong passion for learning new things. I’m a self-taught enthusiast in the fields of cryptocurrency and Web3.</p>
+    </div>
   </div>
 
-  <!-- Email Icon -->
-  <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
-  <div class="popup email-popup" id="emailPopup">
-    <span class="close-popup" data-popup="emailPopup">&times;</span>
-    <h3>📧 Contact Email</h3>
-    <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
+  <div class="icon-popup-container">
+    <img src="images/email.png" class="email-icon clickable" id="emailIcon" alt="Email">
+    <div class="email-popup popup" id="emailPopup">
+      <span class="close-popup" data-popup="emailPopup">&times;</span>
+      <h3>📧 Contact Email</h3>
+      <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
+    </div>
   </div>
 
-  <!-- Instagram Icon -->
-  <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
-  <div class="popup insta-popup" id="instaPopup">
-    <span class="close-popup" data-popup="instaPopup">&times;</span>
-    <h3>📸 Instagram</h3>
-    <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
+  <div class="icon-popup-container">
+    <img src="images/insta.png" class="insta-icon clickable" id="instaIcon" alt="Instagram">
+    <div class="insta-popup popup" id="instaPopup">
+      <span class="close-popup" data-popup="instaPopup">&times;</span>
+      <h3>📸 Instagram</h3>
+      <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
+    </div>
   </div>
 
-  <!-- Twitter Icon -->
-  <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
-  <div class="popup twitter-popup" id="twitterPopup">
-    <span class="close-popup" data-popup="twitterPopup">&times;</span>
-    <h3>🐦 X account</h3>
-    <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
+  <div class="icon-popup-container">
+    <img src="images/twitter.png" class="twitter-icon clickable" id="twitterIcon" alt="Twitter">
+    <div class="twitter-popup popup" id="twitterPopup">
+      <span class="close-popup" data-popup="twitterPopup">&times;</span>
+      <h3>🐦 X account</h3>
+      <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
+    </div>
   </div>
 
-  <!-- Medium Icon -->
-  <img src="images/medium.png" alt="Medium Icon" class="medium-icon clickable" id="openMediumModal" />
-
-  <div id="mediumModal" class="modal">
+  <!-- Medium Modal -->
+  <img src="images/medium.png" class="medium-icon clickable" id="openMediumModal" alt="Medium">
+  <div id="mediumModal" class="medium-popup modal">
     <div class="modal-content">
       <span class="close" id="closeMediumModal">&times;</span>
       <h2>✍️ Medium Articles</h2>
@@ -65,57 +62,83 @@
   <div id="articleModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeArticleModal">&times;</span>
-      <button id="backToArticles" style="margin-bottom: 10px;">&larr; Back</button>
-      <div id="mediumArticleContent" style="max-height: 70vh; overflow-y: auto;"></div>
+      <button id="backToArticles" class="back-button">&larr; Back</button>
+      <div id="mediumArticleContent"></div>
     </div>
   </div>
 
-  <!-- Editor Button -->
-  <img src="images/editor.png" id="openImageModal" alt="Buka Editor" class="clickable editor-button" />
-  <div id="imageModal" class="modal">
+  <!-- Editor Modal -->
+  <img src="images/editor.png" class="editor-button clickable" id="openImageModal" alt="Editor">
+  <div id="imageModal" class="editor-popup modal">
     <div class="modal-content">
       <span class="close" id="closeImageModal">&times;</span>
       <h2>🖼️ Photo Editor</h2>
-      <input type="file" id="imageInput" accept="image/*" style="margin-top: 10px;" />
-      <div id="promptContainer" style="display: none; margin-top: 10px;">
-        <label for="imagePrompt">Masukkan prompt untuk edit gambar:</label>
-        <input type="text" id="imagePrompt" placeholder="Contoh: ubah jadi kartun" style="width: 100%; padding: 8px;" />
-        <button id="generateImageBtn" style="margin-top: 10px; padding: 10px 20px;">Upload & Generate</button>
+      <input type="file" id="imageInput" accept="image/*">
+      <div id="promptContainer" style="display:none;">
+        <label for="imagePrompt">Masukkan prompt:</label>
+        <input type="text" id="imagePrompt" placeholder="Contoh: ubah jadi kartun">
+        <button id="generateImageBtn">Upload & Generate</button>
       </div>
-      <div id="resultAreaImage" style="margin-top: 20px;">
-        <p id="statusImage" style="color: gray;"></p>
-        <img id="uploadedMemeImage" src="" alt="Hasil edit gambar" style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
+      <div id="resultAreaImage">
+        <p id="statusImage"></p>
+        <img id="uploadedMemeImage" src="" alt="" style="display:none;">
       </div>
     </div>
   </div>
 
-  <!-- Art Generator -->
-  <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
-  <div id="artModal" class="modal">
+  <!-- Art Generator Modal -->
+  <img src="images/art.png" class="art-button clickable" id="openArtModalBtn" alt="Art Generator">
+  <div id="artModal" class="art-popup modal">
     <div class="modal-content">
       <span class="close" id="closeArtModal">&times;</span>
       <h2>🎨 Art Generator</h2>
-      <input type="text" id="artPrompt" placeholder="Enter your prompt..." style="margin-top: 10px; width: 100%; padding: 8px;" />
-      <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Generate Art</button>
-      <div id="resultAreaArt" style="margin-top: 20px;">
-        <p id="statusArt" style="color: gray;"></p>
-        <img id="uploadedArtImage" src="" alt="Hasil art dari prompt" style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
+      <input type="text" id="artPrompt" placeholder="Enter your prompt...">
+      <button id="generateArtBtn">Generate Art</button>
+      <div id="resultAreaArt">
+        <p id="statusArt"></p>
+        <img id="uploadedArtImage" src="" alt="" style="display:none;">
       </div>
     </div>
   </div>
 
+  <!-- JavaScript Section -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const openMediumModal = document.getElementById('openMediumModal');
-      const closeMediumModal = document.getElementById('closeMediumModal');
+    document.addEventListener("DOMContentLoaded", () => {
+      const popupMap = {
+        profileIcon: "profilePopup",
+        emailIcon: "emailPopup",
+        instaIcon: "instaPopup",
+        twitterIcon: "twitterPopup",
+      };
+
+      const closeAllPopups = () => {
+        document.querySelectorAll(".popup").forEach(p => p.style.display = "none");
+      };
+
+      Object.keys(popupMap).forEach(id => {
+        document.getElementById(id).addEventListener("click", () => {
+          closeAllPopups();
+          document.getElementById(popupMap[id]).style.display = "block";
+        });
+      });
+
+      document.querySelectorAll(".close-popup").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.getElementById(btn.dataset.popup).style.display = "none";
+        });
+      });
+
       const mediumModal = document.getElementById('mediumModal');
       const articleModal = document.getElementById('articleModal');
+      const openMediumModal = document.getElementById('openMediumModal');
+      const closeMediumModal = document.getElementById('closeMediumModal');
       const closeArticleModal = document.getElementById('closeArticleModal');
       const backToArticles = document.getElementById('backToArticles');
       const mediumArticles = document.getElementById('mediumArticles');
       const mediumArticleContent = document.getElementById('mediumArticleContent');
 
       openMediumModal.addEventListener('click', async () => {
+        closeAllPopups();
         mediumModal.style.display = 'block';
         mediumArticles.innerHTML = 'Loading...';
         try {
@@ -133,7 +156,7 @@
         }
       });
 
-      document.addEventListener('click', (e) => {
+      document.addEventListener('click', e => {
         if (e.target.classList.contains('article-link')) {
           e.preventDefault();
           const content = decodeURIComponent(e.target.getAttribute('data-content'));
@@ -143,22 +166,29 @@
         }
       });
 
-      closeMediumModal.addEventListener('click', () => {
-        mediumModal.style.display = 'none';
-      });
-
-      closeArticleModal.addEventListener('click', () => {
-        articleModal.style.display = 'none';
-      });
-
+      closeMediumModal.addEventListener('click', () => mediumModal.style.display = 'none');
+      closeArticleModal.addEventListener('click', () => articleModal.style.display = 'none');
       backToArticles.addEventListener('click', () => {
         articleModal.style.display = 'none';
         mediumModal.style.display = 'block';
       });
 
-      window.addEventListener('click', (event) => {
-        if (event.target === mediumModal) mediumModal.style.display = 'none';
-        if (event.target === articleModal) articleModal.style.display = 'none';
+      document.getElementById('openImageModal').addEventListener('click', () => {
+        closeAllPopups();
+        document.getElementById('imageModal').style.display = 'block';
+      });
+
+      document.getElementById('closeImageModal').addEventListener('click', () => {
+        document.getElementById('imageModal').style.display = 'none';
+      });
+
+      document.getElementById('openArtModalBtn').addEventListener('click', () => {
+        closeAllPopups();
+        document.getElementById('artModal').style.display = 'block';
+      });
+
+      document.getElementById('closeArtModal').addEventListener('click', () => {
+        document.getElementById('artModal').style.display = 'none';
       });
     });
   </script>

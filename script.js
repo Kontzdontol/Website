@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const get = id => document.getElementById(id);
 
-  // === Elements ===
   const openImageModalBtn = get("openImageModal");
   const imageModal = get("imageModal");
   const imageGenerateBtn = get("generateImageBtn");
@@ -55,30 +54,57 @@ document.addEventListener("DOMContentLoaded", () => {
     mediumContent.innerHTML = "";
   });
 
+  // === Icon Click Handling ===
+  const iconPopupPairs = [
+    { icon: profileIcon, popup: profilePopup },
+    { icon: emailIcon, popup: emailPopup },
+    { icon: instaIcon, popup: instaPopup },
+    { icon: twitterIcon, popup: twitterPopup }
+  ];
+
+  iconPopupPairs.forEach(({ icon, popup }) => {
+    icon?.addEventListener("click", e => {
+      e.stopPropagation();
+      closeAllPopups();
+      if (popup) {
+        const rect = icon.getBoundingClientRect();
+        popup.style.display = "block";
+        popup.style.top = `${rect.top}px`;
+        popup.style.left = `${rect.right + 10}px`;
+      }
+    });
+  });
+
+  mediumIcon?.addEventListener("click", e => {
+    e.stopPropagation();
+    closeAllPopups();
+    showModal(mediumModal);
+    loadMediumArticles();
+  });
+
+  // === Close popups if click outside
   window.addEventListener("click", e => {
-    if (e.target === imageModal) {
+    const target = e.target;
+    const allPopups = iconPopupPairs.map(p => p.popup).filter(Boolean);
+    const allIcons = iconPopupPairs.map(p => p.icon).filter(Boolean);
+
+    const clickedInside = [...allPopups, ...allIcons].some(el => el.contains(target));
+    if (!clickedInside) {
+      closeAllPopups();
+    }
+
+    if (target === imageModal) {
       hideModal(imageModal);
       resetImageForm();
     }
-    if (e.target === artModal) {
+    if (target === artModal) {
       hideModal(artModal);
       resetArtForm();
     }
-    if (e.target === mediumModal) {
+    if (target === mediumModal) {
       hideModal(mediumModal);
       mediumContent.innerHTML = "";
     }
-    closeAllPopups(e);
-  });
-
-  profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
-  emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
-  instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
-  twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
-  mediumIcon?.addEventListener("click", e => {
-    e.stopPropagation();
-    showModal(mediumModal);
-    loadMediumArticles();
   });
 
   fileInput?.addEventListener("change", () => {
@@ -94,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       if (!data?.items?.length) throw new Error("Tidak ada artikel ditemukan.");
 
-      const html = data.items.slice(0, 5).map((item, index) => `
+      const html = data.items.map((item, index) => `
         <div class="medium-article">
           <a href="#" data-index="${index}">
             <strong>${item.title}</strong><br />
@@ -155,20 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
-        const text = await res.text();
-        let result;
-
-        try {
-          result = JSON.parse(text);
-        } catch {
-          throw new Error("❌ Response dari server bukan JSON valid.");
-        }
-
-        console.log("📥 [BFL] Response:", result);
-
-        if (!res.ok || !result?.result) {
-          throw new Error(result?.message || result?.error || "Gagal memproses gambar.");
-        }
+        const result = await res.json();
 
         const imageResult =
           result.result?.sample ||
@@ -176,13 +189,10 @@ document.addEventListener("DOMContentLoaded", () => {
           result.image_url ||
           result.output?.image_url;
 
-        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
+        if (!res.ok || !imageResult) throw new Error(result?.message || "Gagal memproses gambar.");
 
-        if (img) {
-          img.src = imageResult;
-          img.style.display = "block";
-        }
-
+        img.src = imageResult;
+        img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
         console.error("❌ Error:", err);
@@ -218,16 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ prompt, width: 512, height: 512 })
       });
 
-      const text = await res.text();
-      let result = {};
-
-      try {
-        result = JSON.parse(text);
-      } catch {
-        throw new Error("❌ Response tidak dapat dibaca. Mungkin bukan JSON valid.");
-      }
-
-      console.log("🎯 Response dari /api/generate-art:", result);
+      const result = await res.json();
 
       const imageUrl =
         result.image_url ||
@@ -237,15 +238,10 @@ document.addEventListener("DOMContentLoaded", () => {
         result.image ||
         result.images?.[0];
 
-      if (!res.ok || !imageUrl) {
-        throw new Error(result.message || "Tidak ada output gambar dari AI.");
-      }
+      if (!res.ok || !imageUrl) throw new Error(result.message || "Tidak ada output gambar dari AI.");
 
-      if (artImage) {
-        artImage.src = imageUrl;
-        artImage.style.display = "block";
-      }
-
+      artImage.src = imageUrl;
+      artImage.style.display = "block";
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
       console.error("❌ Error:", err);
@@ -256,40 +252,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  function togglePopupWith(e, popup) {
-    e.stopPropagation();
-    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup];
-    allPopups.forEach(p => {
-      if (p !== popup) p.style.display = "none";
+  function closeAllPopups() {
+    iconPopupPairs.forEach(({ popup }) => {
+      if (popup) popup.style.display = "none";
     });
-    if (popup) popup.style.display = (popup.style.display === "block") ? "none" : "block";
-  }
-
-  function closeAllPopups(e) {
-    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
-    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
-    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
-    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
-    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
   }
 
   function resetImageForm() {
-    if (fileInput) fileInput.value = "";
-    if (promptInput) promptInput.value = "";
-    if (promptContainer) promptContainer.style.display = "none";
-    if (img) {
-      img.src = "";
-      img.style.display = "none";
-    }
-    if (status) status.innerText = "";
+    fileInput.value = "";
+    promptInput.value = "";
+    promptContainer.style.display = "none";
+    img.src = "";
+    img.style.display = "none";
+    status.innerText = "";
   }
 
   function resetArtForm() {
-    if (artPromptInput) artPromptInput.value = "";
-    if (artImage) {
-      artImage.src = "";
-      artImage.style.display = "none";
-    }
-    if (artStatus) artStatus.innerText = "";
+    artPromptInput.value = "";
+    artImage.src = "";
+    artImage.style.display = "none";
+    artStatus.innerText = "";
   }
 });

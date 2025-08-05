@@ -1,13 +1,14 @@
-/* === Global Reset & Box Sizing === */
+/* === Reset & Box Sizing === */
 * {
   box-sizing: border-box;
 }
 img {
   max-width: 100%;
   height: auto;
+  display: block;
 }
 
-/* --- Latar belakang ganda --- */
+/* === Latar Belakang === */
 .background-layer {
   position: fixed;
   top: 0;
@@ -21,7 +22,6 @@ img {
 }
 .background-gif {
   background-image: url("images/background.gif");
-  z-index: -2;
 }
 .background-jpg {
   background-image: url("images/background.jpg");
@@ -29,7 +29,7 @@ img {
   z-index: -1;
 }
 
-/* --- Body --- */
+/* === Body === */
 body {
   margin: 0;
   padding: 0;
@@ -38,9 +38,10 @@ body {
   color: #fff;
   overflow-x: hidden;
   position: relative;
+  background-color: #000;
 }
 
-/* === Ikon Sosial, Editor & Art - Desktop === */
+/* === Ikon Sosial & Tools === */
 .profile-icon,
 .email-icon,
 .insta-icon,
@@ -50,13 +51,12 @@ body {
 .art-button {
   position: fixed;
   left: 2vw;
-  width: 80px;
+  width: 60px;
   height: auto;
   z-index: 11;
   cursor: pointer;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
-
 .profile-icon:hover,
 .email-icon:hover,
 .insta-icon:hover,
@@ -68,24 +68,22 @@ body {
   filter: brightness(1.15);
 }
 
+/* === Posisi Ikon === */
 .profile-icon { top: 60px; }
-.email-icon   { top: 160px; }
-.insta-icon   { top: 260px; }
-.twitter-icon { top: 360px; }
-.medium-icon  { top: 460px; }
-.editor-button { top: 560px; }
-.art-button    { top: 620px; }
+.email-icon   { top: 140px; }
+.insta-icon   { top: 220px; }
+.twitter-icon { top: 300px; }
+.medium-icon  { top: 380px; }
+.editor-button { top: 460px; }
+.art-button    { top: 510px; }
 
-/* === Popup Umum === */
+/* === Popup Ikon Samping === */
 .profile-popup,
 .email-popup,
 .insta-popup,
-.twitter-popup,
-.medium-popup,
-.art-popup {
+.twitter-popup {
   display: none;
   position: fixed;
-  left: calc(2vw + 90px);
   background-color: #fff;
   color: #000;
   border-radius: 10px;
@@ -93,129 +91,88 @@ body {
   z-index: 100;
   width: 360px;
   max-width: 90vw;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.3s ease-in-out;
   max-height: 80vh;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   overflow-y: auto;
+  animation: fadeIn 0.3s ease-in-out;
+  left: calc(2vw + 70px);
 }
 
 .profile-popup { top: 60px; }
-.email-popup   { top: 160px; }
-.insta-popup   { top: 260px; }
-.twitter-popup { top: 360px; }
-.medium-popup  { top: 460px; }
-.art-popup     { top: 620px; }
+.email-popup   { top: 140px; }
+.insta-popup   { top: 220px; }
+.twitter-popup { top: 300px; }
 
-.profile-popup h3,
-.email-popup h3,
-.insta-popup h3,
-.twitter-popup h3,
-.medium-popup h3,
-.art-popup h3 {
-  margin-top: 0;
-  font-size: 20px;
+/* === Modal Popup Umum (Editor, Art, Medium, Article) === */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
 }
 
+.modal-content {
+  background-color: #fff;
+  color: #000;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 720px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* === Konten Popup === */
+.popup h3,
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.popup img,
 .profile-popup img {
   width: 90px;
   border-radius: 50%;
   margin-bottom: 10px;
 }
 
-.profile-popup p,
-.email-popup p,
-.insta-popup p,
-.twitter-popup p,
-.medium-popup p,
-.art-popup p {
+.popup p,
+.modal-content p,
+.popup a {
   font-size: 18px;
-  margin: 0;
   word-break: break-word;
-}
-
-/* === Tombol keluar untuk popup kecil === */
-.close-popup {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  color: red;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.close-popup:hover {
-  color: darkred;
-}
-
-.email-popup .close-email {
-  position: absolute;
-  top: 6px;
-  right: 10px;
-  font-size: 20px;
-  color: red;
-  cursor: pointer;
-}
-
-.insta-popup a,
-.twitter-popup a,
-.medium-popup a,
-.art-popup a {
   color: #000;
   text-decoration: none;
 }
-.insta-popup a:hover,
-.twitter-popup a:hover,
-.medium-popup a:hover,
-.art-popup a:hover {
+.popup a:hover,
+.modal-content a:hover {
   text-decoration: underline;
 }
 
-/* === Modal / Editor & Art / Medium View === */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  overflow-y: auto;
-}
-.modal-content {
-  position: relative;
-  background-color: white;
-  color: black;
-  margin: 5% auto;
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 720px;
-  text-align: left;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* === Tombol keluar untuk modal besar === */
-.close,
-.close-art,
-.close-medium {
+/* === Tombol Keluar (X) === */
+.close-popup,
+.close {
   position: absolute;
   top: 10px;
-  right: 15px;
-  color: red;
-  font-size: 28px;
+  right: 14px;
+  font-size: 22px;
   font-weight: bold;
+  color: red;
   cursor: pointer;
 }
-.close:hover,
-.close-art:hover,
-.close-medium:hover {
+.close:hover {
   color: darkred;
 }
 
+/* === Tombol Back Artikel === */
 .back-button {
   margin-bottom: 15px;
   display: inline-block;
@@ -227,64 +184,75 @@ body {
   text-decoration: underline;
 }
 
+/* === Area Hasil === */
+#resultAreaImage,
+#resultAreaArt {
+  margin-top: 20px;
+  text-align: center;
+}
+#uploadedMemeImage,
+#uploadedArtImage {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+  display: block;
+}
+
 /* === Responsif Mobile === */
 @media (max-width: 600px) {
-  .profile-icon { top: 30px; }
-  .email-icon   { top: 110px; }
-  .insta-icon   { top: 190px; }
-  .twitter-icon { top: 270px; }
-  .medium-icon  { top: 350px; }
-  .editor-button {
-    top: 440px;
-    left: 4vw;
-    width: 22vw;
-    max-width: 70px;
-  }
-  .art-button {
-    top: 520px;
-    left: 4vw;
-    width: 22vw;
-    max-width: 70px;
-  }
-
   .profile-icon,
   .email-icon,
   .insta-icon,
   .twitter-icon,
-  .medium-icon {
-    left: 5vw;
-    width: 18vw;
+  .medium-icon,
+  .editor-button,
+  .art-button {
+    left: 4vw;
+    width: 16vw;
     max-width: 60px;
   }
+
+  .profile-icon { top: 30px; }
+  .email-icon   { top: 100px; }
+  .insta-icon   { top: 170px; }
+  .twitter-icon { top: 240px; }
+  .medium-icon  { top: 310px; }
+  .editor-button { top: 380px; }
+  .art-button    { top: 450px; }
 
   .profile-popup,
   .email-popup,
   .insta-popup,
-  .twitter-popup,
-  .medium-popup,
-  .art-popup {
-    width: 85vw;
-    left: calc(5vw + 50px);
+  .twitter-popup {
+    width: 80vw;
+    left: calc(4vw + 70px);
     padding: 12px;
   }
 
   .profile-popup { top: 30px; }
-  .email-popup   { top: 110px; }
-  .insta-popup   { top: 190px; }
-  .twitter-popup { top: 270px; }
-  .medium-popup  { top: 350px; }
-  .art-popup     { top: 520px; }
+  .email-popup   { top: 100px; }
+  .insta-popup   { top: 170px; }
+  .twitter-popup { top: 240px; }
 
   .profile-popup img {
     width: 70px;
   }
 
-  .profile-popup h3,
-  .email-popup p,
-  .insta-popup p,
-  .twitter-popup p,
-  .medium-popup p,
-  .art-popup p {
-    font-size: 17px;
+  .popup p,
+  .modal-content p,
+  .popup a {
+    font-size: 16px;
+  }
+}
+
+/* === Animasi === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
