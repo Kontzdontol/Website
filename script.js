@@ -28,10 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const instaPopup = get("instaPopup");
   const twitterIcon = get("twitterIcon");
   const twitterPopup = get("twitterPopup");
-  const mediumIcon = get("mediumIcon");
+  const mediumIcon = get("openMediumModal");
   const mediumModal = get("mediumModal");
   const closeMediumBtn = get("closeMediumModal");
-  const mediumContent = get("mediumContent");
+  const mediumArticles = get("mediumArticles");
+  const mediumArticleContent = get("mediumArticleContent");
+  const articleModal = get("articleModal");
+  const closeArticleModal = get("closeArticleModal");
+  const backToArticles = get("backToArticles");
 
   const showModal = modal => modal.style.display = "block";
   const hideModal = modal => modal.style.display = "none";
@@ -49,9 +53,11 @@ document.addEventListener("DOMContentLoaded", () => {
     resetArtForm();
   });
 
-  closeMediumBtn?.addEventListener("click", () => {
-    hideModal(mediumModal);
-    mediumContent.innerHTML = "";
+  closeMediumBtn?.addEventListener("click", () => hideModal(mediumModal));
+  closeArticleModal?.addEventListener("click", () => hideModal(articleModal));
+  backToArticles?.addEventListener("click", () => {
+    hideModal(articleModal);
+    showModal(mediumModal);
   });
 
   // === Icon Click Handling ===
@@ -75,23 +81,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  mediumIcon?.addEventListener("click", e => {
+  mediumIcon?.addEventListener("click", async e => {
     e.stopPropagation();
     closeAllPopups();
     showModal(mediumModal);
-    loadMediumArticles();
+    mediumArticles.innerHTML = 'Loading...';
+    try {
+      const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@hamzahnorsihab07');
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        mediumArticles.innerHTML = data.items.map(item => `
+          <p><a href="#" data-content="${encodeURIComponent(item.content)}" class="article-link">${item.title}</a></p>
+        `).join('');
+      } else {
+        mediumArticles.innerHTML = 'No articles found.';
+      }
+    } catch {
+      mediumArticles.innerHTML = 'Failed to load articles.';
+    }
   });
 
-  // === Close popups if click outside
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('article-link')) {
+      e.preventDefault();
+      const content = decodeURIComponent(e.target.getAttribute('data-content'));
+      mediumArticleContent.innerHTML = content;
+      hideModal(mediumModal);
+      showModal(articleModal);
+    }
+  });
+
+  // === Close popups if click outside ===
   window.addEventListener("click", e => {
     const target = e.target;
     const allPopups = iconPopupPairs.map(p => p.popup).filter(Boolean);
     const allIcons = iconPopupPairs.map(p => p.icon).filter(Boolean);
-
     const clickedInside = [...allPopups, ...allIcons].some(el => el.contains(target));
-    if (!clickedInside) {
-      closeAllPopups();
-    }
+    if (!clickedInside) closeAllPopups();
 
     if (target === imageModal) {
       hideModal(imageModal);
@@ -103,58 +129,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (target === mediumModal) {
       hideModal(mediumModal);
-      mediumContent.innerHTML = "";
+      mediumArticles.innerHTML = "";
     }
   });
 
   fileInput?.addEventListener("change", () => {
     promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
   });
-
-  // === Load Medium Articles ===
-  async function loadMediumArticles() {
-    if (!mediumContent) return;
-    mediumContent.innerHTML = "📖 Memuat artikel Medium...";
-    try {
-      const response = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@hamzahnorsihab07");
-      const data = await response.json();
-      if (!data?.items?.length) throw new Error("Tidak ada artikel ditemukan.");
-
-      const html = data.items.map((item, index) => `
-        <div class="medium-article">
-          <a href="#" data-index="${index}">
-            <strong>${item.title}</strong><br />
-            <small>${new Date(item.pubDate).toLocaleDateString()}</small>
-          </a>
-        </div>
-      `).join("");
-
-      mediumContent.innerHTML = `<div class="medium-list">${html}</div>`;
-
-      document.querySelectorAll(".medium-article a").forEach((a, i) => {
-        a.addEventListener("click", e => {
-          e.preventDefault();
-          showArticleContent(data.items[i]);
-        });
-      });
-    } catch (err) {
-      console.error(err);
-      mediumContent.innerHTML = "⚠️ Gagal memuat artikel Medium.";
-    }
-  }
-
-  function showArticleContent(article) {
-    if (!article || !mediumContent) return;
-    mediumContent.innerHTML = `
-      <div class="medium-full-article">
-        <button id="backToList">⬅ Kembali ke daftar</button>
-        <h2>${article.title}</h2>
-        <p><em>${new Date(article.pubDate).toLocaleDateString()}</em></p>
-        <div class="medium-body">${article.content}</div>
-      </div>
-    `;
-    document.getElementById("backToList")?.addEventListener("click", loadMediumArticles);
-  }
 
   // === Photo Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
