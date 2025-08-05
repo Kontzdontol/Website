@@ -16,6 +16,17 @@
   </script>
 
   <style>
+    .popup {
+      display: none;
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #aaa;
+      z-index: 1000;
+    }
+
     .close-popup, .close {
       position: absolute;
       top: 10px;
@@ -25,10 +36,25 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .popup {
-      position: relative;
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
     }
+
     .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
       position: relative;
     }
   </style>
@@ -40,44 +66,44 @@
 
   <!-- Icons and Popups -->
   <img src="images/profile.png" alt="Profile Icon" class="profile-icon" id="profileIcon" />
-  <div class="popup profile-popup" id="profilePopup">
-    <span class="close-popup" data-target="profilePopup">&times;</span>
+  <div class="popup" id="profilePopup">
+    <span class="close-popup">&times;</span>
     <img src="images/profile-photo.jpg" alt="Foto Profil" class="popup-photo" />
     <h3>Hamzah Nor Sihab</h3>
     <p>Hi, I'm Hamzah from Kudus, Indonesia...</p>
   </div>
 
   <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
-  <div class="popup email-popup" id="emailPopup">
-    <span class="close-popup" data-target="emailPopup">&times;</span>
+  <div class="popup" id="emailPopup">
+    <span class="close-popup">&times;</span>
     <h3>📧 Contact Email</h3>
     <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
   </div>
 
   <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
-  <div class="popup insta-popup" id="instaPopup">
-    <span class="close-popup" data-target="instaPopup">&times;</span>
+  <div class="popup" id="instaPopup">
+    <span class="close-popup">&times;</span>
     <h3>📸 Instagram</h3>
     <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
   </div>
 
   <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
-  <div class="popup twitter-popup" id="twitterPopup">
-    <span class="close-popup" data-target="twitterPopup">&times;</span>
+  <div class="popup" id="twitterPopup">
+    <span class="close-popup">&times;</span>
     <h3>🐦 X account</h3>
     <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
   </div>
 
   <img src="images/medium.png" alt="Medium Icon" class="medium-icon" id="mediumIcon" />
-  <div class="popup medium-popup" id="mediumPopup">
-    <span class="close-popup" data-target="mediumPopup">&times;</span>
+  <div class="popup" id="mediumPopup">
+    <span class="close-popup">&times;</span>
     <h3>✍️ Medium</h3>
     <p><a href="https://medium.com/@hamzahnorsihab07" target="_blank">@hamzahnorsihab07</a></p>
   </div>
 
   <!-- Editor Modal -->
   <img src="images/editor.png" id="openImageModal" alt="Buka Editor" class="clickable editor-button" />
-  <div id="imageModal" class="modal" tabindex="-1" role="dialog">
+  <div id="imageModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeImageModal">&times;</span>
       <h2>🖼️ Photo Editor</h2>
@@ -96,7 +122,7 @@
 
   <!-- Art Generator Modal -->
   <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
-  <div id="artModal" class="modal" tabindex="-1" role="dialog">
+  <div id="artModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeArtModal">&times;</span>
       <h2>🎨 Art Generator</h2>
@@ -109,75 +135,75 @@
     </div>
   </div>
 
-  <!-- Script: Popup Close Logic -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // close-popup for all popups
-      document.querySelectorAll('.close-popup').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const popupId = btn.getAttribute('data-target');
-          document.getElementById(popupId).style.display = 'none';
+      // Show popup
+      const popupMap = {
+        profileIcon: 'profilePopup',
+        emailIcon: 'emailPopup',
+        instaIcon: 'instaPopup',
+        twitterIcon: 'twitterPopup',
+        mediumIcon: 'mediumPopup'
+      };
+
+      for (const iconId in popupMap) {
+        const popupId = popupMap[iconId];
+        document.getElementById(iconId).addEventListener('click', () => {
+          document.getElementById(popupId).style.display = 'block';
+        });
+      }
+
+      // Close popups
+      document.querySelectorAll('.close-popup').forEach(closeBtn => {
+        closeBtn.addEventListener('click', () => {
+          closeBtn.parentElement.style.display = 'none';
         });
       });
 
-      // open popup logic
-      document.getElementById('profileIcon').onclick = () => {
-        document.getElementById('profilePopup').style.display = 'block';
-      };
-      document.getElementById('emailIcon').onclick = () => {
-        document.getElementById('emailPopup').style.display = 'block';
-      };
-      document.getElementById('instaIcon').onclick = () => {
-        document.getElementById('instaPopup').style.display = 'block';
-      };
-      document.getElementById('twitterIcon').onclick = () => {
-        document.getElementById('twitterPopup').style.display = 'block';
-      };
-      document.getElementById('mediumIcon').onclick = () => {
-        document.getElementById('mediumPopup').style.display = 'block';
-      };
-
-      // modal logic
+      // Modal open/close logic
       const imageModal = document.getElementById('imageModal');
       const artModal = document.getElementById('artModal');
-      document.getElementById('openImageModal').onclick = () => imageModal.style.display = 'block';
-      document.getElementById('closeImageModal').onclick = () => imageModal.style.display = 'none';
-      document.getElementById('openArtModalBtn').onclick = () => artModal.style.display = 'block';
-      document.getElementById('closeArtModal').onclick = () => artModal.style.display = 'none';
 
-      // art generator
+      document.getElementById('openImageModal').addEventListener('click', () => imageModal.style.display = 'block');
+      document.getElementById('closeImageModal').addEventListener('click', () => imageModal.style.display = 'none');
+
+      document.getElementById('openArtModalBtn').addEventListener('click', () => artModal.style.display = 'block');
+      document.getElementById('closeArtModal').addEventListener('click', () => artModal.style.display = 'none');
+
+      // Optional: click outside to close modal
+      window.addEventListener('click', (e) => {
+        if (e.target === imageModal) imageModal.style.display = 'none';
+        if (e.target === artModal) artModal.style.display = 'none';
+      });
+
+      // Art generation logic (optional)
       document.getElementById('generateArtBtn').addEventListener('click', async () => {
         const prompt = document.getElementById('artPrompt').value;
-        const statusArt = document.getElementById('statusArt');
-        const uploadedArtImage = document.getElementById('uploadedArtImage');
+        const status = document.getElementById('statusArt');
+        const resultImg = document.getElementById('uploadedArtImage');
         if (!prompt) return;
 
-        statusArt.textContent = 'Generating...';
-        uploadedArtImage.style.display = 'none';
+        status.textContent = 'Generating...';
+        resultImg.style.display = 'none';
 
         try {
-          const response = await fetch('/api/generate', {
+          const res = await fetch('/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt })
           });
-          const result = await response.json();
-          if (result.image_url) {
-            uploadedArtImage.src = result.image_url;
-            uploadedArtImage.style.display = 'block';
-            statusArt.textContent = '';
-          } else {
-            throw new Error('Image URL not returned');
-          }
-        } catch (error) {
-          console.error(error);
-          statusArt.textContent = 'Error generating image.';
+          const json = await res.json();
+          if (json.image_url) {
+            resultImg.src = json.image_url;
+            resultImg.style.display = 'block';
+            status.textContent = '';
+          } else throw new Error('Invalid response');
+        } catch (err) {
+          console.error(err);
+          status.textContent = 'Error generating image.';
         }
       });
     });
   </script>
-
-  <!-- External Script -->
-  <script src="script.js" defer></script>
 </body>
 </html>
