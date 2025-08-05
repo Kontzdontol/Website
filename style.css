@@ -85,7 +85,7 @@ body {
 .art-popup {
   display: none;
   position: fixed;
-  left: calc(2vw + 50px);
+  left: calc(2vw + 150px);
   background-color: #fff;
   color: #000;
   border-radius: 10px;
