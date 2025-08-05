@@ -32,12 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
 
-  const showModal = modal => modal.style.display = "block";
-  const hideModal = modal => modal.style.display = "none";
+  const showModal = modal => modal && (modal.style.display = "block");
+  const hideModal = modal => modal && (modal.style.display = "none");
 
+  // === Open modal ===
   openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
   openArtModalBtn?.addEventListener("click", () => showModal(artModal));
 
+  // === Close modal with "X" button ===
   closeImageBtn?.addEventListener("click", () => {
     hideModal(imageModal);
     resetImageForm();
@@ -48,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetArtForm();
   });
 
+  // === Close modal when clicking outside ===
   window.addEventListener("click", e => {
     if (e.target === imageModal) {
       hideModal(imageModal);
@@ -60,14 +63,20 @@ document.addEventListener("DOMContentLoaded", () => {
     closeAllPopups(e);
   });
 
+  // === Social Icon Popup Toggle ===
   profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
   emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
   instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
   twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
   mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
 
+  // === Show prompt field if file uploaded ===
   fileInput?.addEventListener("change", () => {
-    promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
+    if (fileInput.files.length > 0) {
+      promptContainer.style.display = "block";
+    } else {
+      promptContainer.style.display = "none";
+    }
   });
 
   // === Photo Editor ===
@@ -96,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const text = await res.text();
-        let result;
+        let result = {};
 
         try {
           result = JSON.parse(text);
@@ -106,23 +115,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("📥 [BFL] Response:", result);
 
-        if (!res.ok || !result?.result) {
-          throw new Error(result?.message || result?.error || "Gagal memproses gambar.");
-        }
-
         const imageResult =
           result.result?.sample ||
           result.result?.image_url ||
           result.image_url ||
           result.output?.image_url;
 
-        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
-
-        if (img) {
-          img.src = imageResult;
-          img.style.display = "block";
+        if (!res.ok || !imageResult) {
+          throw new Error(result?.message || result?.error || "Gagal memproses gambar.");
         }
 
+        img.src = imageResult;
+        img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
         console.error("❌ Error:", err);
@@ -181,11 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(result.message || "Tidak ada output gambar dari AI.");
       }
 
-      if (artImage) {
-        artImage.src = imageUrl;
-        artImage.style.display = "block";
-      }
-
+      artImage.src = imageUrl;
+      artImage.style.display = "block";
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
       console.error("❌ Error:", err);
@@ -196,17 +197,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // === Popups Toggle ===
   function togglePopupWith(e, popup) {
     e.stopPropagation();
     const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
     allPopups.forEach(p => {
       if (p !== popup) p.style.display = "none";
     });
-    if (popup) popup.style.display = (popup.style.display === "block") ? "none" : "block";
+    popup.style.display = (popup.style.display === "block") ? "none" : "block";
   }
 
   function closeAllPopups(e) {
-    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
+    const isOutside = (icon, popup) => popup && !popup.contains(e.target) && e.target !== icon;
     if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
     if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
     if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
@@ -214,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
   }
 
+  // === Reset Functions ===
   function resetImageForm() {
     if (fileInput) fileInput.value = "";
     if (promptInput) promptInput.value = "";
