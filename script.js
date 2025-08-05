@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!userPrompt) return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
-    const prompt = Edit gambar input ini sesuai instruksi berikut: ${userPrompt};
+    const prompt = `Edit gambar input ini sesuai instruksi berikut: ${userPrompt}`;
     status.innerText = "📤 Mengunggah gambar...";
     imageGenerateBtn.disabled = true;
     imageGenerateBtn.innerText = "Processing...";
