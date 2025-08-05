@@ -26,7 +26,7 @@
 
   <!-- Profile Popup -->
   <div class="popup profile-popup" id="profilePopup">
-    <span class="close-popup" data-target="profilePopup">&times;</span>
+    <span class="close-popup" id="closeProfilePopup">&times;</span>
     <img src="images/profile-photo.jpg" alt="Foto Profil" class="popup-photo" />
     <h3>Hamzah Nor Sihab</h3>
     <p>
@@ -38,7 +38,7 @@
   <!-- Email Icon -->
   <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
   <div class="popup email-popup" id="emailPopup">
-    <span class="close-popup" data-target="emailPopup">&times;</span>
+    <span class="close-popup" id="closeEmailPopup">&times;</span>
     <h3>📧 Contact Email</h3>
     <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
   </div>
@@ -46,7 +46,7 @@
   <!-- Instagram Icon -->
   <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
   <div class="popup insta-popup" id="instaPopup">
-    <span class="close-popup" data-target="instaPopup">&times;</span>
+    <span class="close-popup" id="closeInstaPopup">&times;</span>
     <h3>📸 Instagram</h3>
     <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
   </div>
@@ -54,7 +54,7 @@
   <!-- Twitter Icon -->
   <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
   <div class="popup twitter-popup" id="twitterPopup">
-    <span class="close-popup" data-target="twitterPopup">&times;</span>
+    <span class="close-popup" id="closeTwitterPopup">&times;</span>
     <h3>🐦 X account</h3>
     <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
   </div>
@@ -62,7 +62,7 @@
   <!-- Medium Icon -->
   <img src="images/medium.png" alt="Medium Icon" class="medium-icon" id="mediumIcon" />
   <div class="popup medium-popup" id="mediumPopup">
-    <span class="close-popup" data-target="mediumPopup">&times;</span>
+    <span class="close-popup" id="closeMediumPopup">&times;</span>
     <h3>✍️ Medium</h3>
     <p><a href="https://medium.com/@hamzahnorsihab07" target="_blank">@hamzahnorsihab07</a></p>
   </div>
@@ -71,7 +71,7 @@
   <img src="images/editor.png" id="openImageModal" alt="Buka Editor" class="clickable editor-button" />
 
   <!-- Image Editor Modal -->
-  <div id="imageModal" class="modal" tabindex="-1" role="dialog">
+  <div id="imageModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeImageModal">&times;</span>
       <h2>🖼️ Photo Editor</h2>
@@ -96,7 +96,7 @@
   <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
 
   <!-- Art Generator Modal -->
-  <div id="artModal" class="modal" tabindex="-1" role="dialog">
+  <div id="artModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeArtModal">&times;</span>
       <h2>🎨 Art Generator</h2>
@@ -112,7 +112,6 @@
     </div>
   </div>
 
-  <!-- Script -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const uploadedArtImage = document.getElementById('uploadedArtImage');
