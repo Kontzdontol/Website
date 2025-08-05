@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const twitterPopup = get("twitterPopup");
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
+  const mediumContent = get("mediumContent");
 
   const showModal = modal => modal.style.display = "block";
   const hideModal = modal => modal.style.display = "none";
@@ -64,11 +65,39 @@ document.addEventListener("DOMContentLoaded", () => {
   emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
   instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
   twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
-  mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
+  mediumIcon?.addEventListener("click", e => {
+    togglePopupWith(e, mediumPopup);
+    loadMediumArticles();
+  });
 
   fileInput?.addEventListener("change", () => {
     promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
   });
+
+  // === Load Medium Articles ===
+  async function loadMediumArticles() {
+    if (!mediumContent) return;
+    mediumContent.innerHTML = "📖 Memuat artikel Medium...";
+    try {
+      const response = await fetch("https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@hamzahnorsihab07");
+      const data = await response.json();
+      if (!data?.items?.length) throw new Error("Tidak ada artikel ditemukan.");
+
+      const html = data.items.slice(0, 5).map(item => `
+        <div class="medium-article">
+          <a href="${item.link}" target="_blank" rel="noopener">
+            <strong>${item.title}</strong><br />
+            <small>${new Date(item.pubDate).toLocaleDateString()}</small>
+          </a>
+        </div>
+      `).join("");
+
+      mediumContent.innerHTML = `<div class="medium-list">${html}</div>`;
+    } catch (err) {
+      console.error(err);
+      mediumContent.innerHTML = "⚠️ Gagal memuat artikel Medium.";
+    }
+  }
 
   // === Photo Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
