@@ -85,7 +85,7 @@ body {
 .art-popup {
   display: none;
   position: fixed;
-  left: calc(2vw + 150px);
+  left: calc(2vw + 90px);
   background-color: #fff;
   color: #000;
   border-radius: 10px;
@@ -95,6 +95,8 @@ body {
   max-width: 90vw;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   animation: fadeIn 0.3s ease-in-out;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .profile-popup { top: 60px; }
@@ -131,7 +133,7 @@ body {
   word-break: break-word;
 }
 
-/* === Tombol keluar untuk popup kecil */
+/* === Tombol keluar untuk popup kecil === */
 .close-popup {
   position: absolute;
   top: 8px;
@@ -168,35 +170,38 @@ body {
   text-decoration: underline;
 }
 
-/* === Modal / Editor & Art === */
+/* === Modal / Editor & Art / Medium View === */
 .modal {
   display: none;
   position: fixed;
   z-index: 1000;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
 }
 .modal-content {
   position: relative;
   background-color: white;
   color: black;
-  margin: 10% auto;
+  margin: 5% auto;
   padding: 20px;
   border-radius: 12px;
   width: 90%;
-  max-width: 420px;
-  text-align: center;
+  max-width: 720px;
+  text-align: left;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease-in-out;
 }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* === Tombol keluar untuk modal besar */
+/* === Tombol keluar untuk modal besar === */
 .close,
-.close-art {
+.close-art,
+.close-medium {
   position: absolute;
   top: 10px;
   right: 15px;
@@ -206,8 +211,20 @@ body {
   cursor: pointer;
 }
 .close:hover,
-.close-art:hover {
+.close-art:hover,
+.close-medium:hover {
   color: darkred;
+}
+
+.back-button {
+  margin-bottom: 15px;
+  display: inline-block;
+  color: #0077cc;
+  cursor: pointer;
+  font-weight: bold;
+}
+.back-button:hover {
+  text-decoration: underline;
 }
 
 /* === Responsif Mobile === */

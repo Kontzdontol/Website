@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const twitterIcon = get("twitterIcon");
   const twitterPopup = get("twitterPopup");
   const mediumIcon = get("mediumIcon");
-  const mediumPopup = get("mediumPopup");
+  const mediumModal = get("mediumModal");
+  const closeMediumBtn = get("closeMediumModal");
   const mediumContent = get("mediumContent");
 
   const showModal = modal => modal.style.display = "block";
@@ -49,6 +50,11 @@ document.addEventListener("DOMContentLoaded", () => {
     resetArtForm();
   });
 
+  closeMediumBtn?.addEventListener("click", () => {
+    hideModal(mediumModal);
+    mediumContent.innerHTML = "";
+  });
+
   window.addEventListener("click", e => {
     if (e.target === imageModal) {
       hideModal(imageModal);
@@ -58,6 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
       hideModal(artModal);
       resetArtForm();
     }
+    if (e.target === mediumModal) {
+      hideModal(mediumModal);
+      mediumContent.innerHTML = "";
+    }
     closeAllPopups(e);
   });
 
@@ -66,7 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
   instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
   twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
   mediumIcon?.addEventListener("click", e => {
-    togglePopupWith(e, mediumPopup);
+    e.stopPropagation();
+    showModal(mediumModal);
     loadMediumArticles();
   });
 
@@ -83,9 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       if (!data?.items?.length) throw new Error("Tidak ada artikel ditemukan.");
 
-      const html = data.items.slice(0, 5).map(item => `
+      const html = data.items.slice(0, 5).map((item, index) => `
         <div class="medium-article">
-          <a href="${item.link}" target="_blank" rel="noopener">
+          <a href="#" data-index="${index}">
             <strong>${item.title}</strong><br />
             <small>${new Date(item.pubDate).toLocaleDateString()}</small>
           </a>
@@ -93,10 +104,30 @@ document.addEventListener("DOMContentLoaded", () => {
       `).join("");
 
       mediumContent.innerHTML = `<div class="medium-list">${html}</div>`;
+
+      document.querySelectorAll(".medium-article a").forEach((a, i) => {
+        a.addEventListener("click", e => {
+          e.preventDefault();
+          showArticleContent(data.items[i]);
+        });
+      });
     } catch (err) {
       console.error(err);
       mediumContent.innerHTML = "⚠️ Gagal memuat artikel Medium.";
     }
+  }
+
+  function showArticleContent(article) {
+    if (!article || !mediumContent) return;
+    mediumContent.innerHTML = `
+      <div class="medium-full-article">
+        <button id="backToList">⬅ Kembali ke daftar</button>
+        <h2>${article.title}</h2>
+        <p><em>${new Date(article.pubDate).toLocaleDateString()}</em></p>
+        <div class="medium-body">${article.content}</div>
+      </div>
+    `;
+    document.getElementById("backToList")?.addEventListener("click", loadMediumArticles);
   }
 
   // === Photo Editor ===
@@ -227,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function togglePopupWith(e, popup) {
     e.stopPropagation();
-    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
+    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup];
     allPopups.forEach(p => {
       if (p !== popup) p.style.display = "none";
     });
@@ -240,7 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
     if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
     if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
-    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
   }
 
   function resetImageForm() {

@@ -14,9 +14,11 @@
   </script>
 </head>
 <body>
+  <!-- Background Layers -->
   <div class="background-layer background-gif"></div>
   <div class="background-layer background-jpg"></div>
 
+  <!-- Profile Icon -->
   <img src="images/profile.png" alt="Profile Icon" class="profile-icon" id="profileIcon" />
   <div class="popup profile-popup" id="profilePopup">
     <span class="close-popup" data-popup="profilePopup">&times;</span>
@@ -25,6 +27,7 @@
     <p>Hi, I'm Hamzah from Kudus, Indonesia, an economics graduate with a strong passion for learning new things. I’m a self-taught enthusiast in the fields of cryptocurrency and Web3.</p>
   </div>
 
+  <!-- Email Icon -->
   <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
   <div class="popup email-popup" id="emailPopup">
     <span class="close-popup" data-popup="emailPopup">&times;</span>
@@ -32,6 +35,7 @@
     <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
   </div>
 
+  <!-- Instagram Icon -->
   <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
   <div class="popup insta-popup" id="instaPopup">
     <span class="close-popup" data-popup="instaPopup">&times;</span>
@@ -39,6 +43,7 @@
     <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
   </div>
 
+  <!-- Twitter Icon -->
   <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
   <div class="popup twitter-popup" id="twitterPopup">
     <span class="close-popup" data-popup="twitterPopup">&times;</span>
@@ -46,13 +51,26 @@
     <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
   </div>
 
-  <img src="images/medium.png" alt="Medium Icon" class="medium-icon" id="mediumIcon" />
-  <div class="popup medium-popup" id="mediumPopup">
-    <span class="close-popup" data-popup="mediumPopup">&times;</span>
-    <h3>✍️ Medium Articles</h3>
-    <div id="mediumArticles">Loading articles...</div>
+  <!-- Medium Icon -->
+  <img src="images/medium.png" alt="Medium Icon" class="medium-icon clickable" id="openMediumModal" />
+
+  <div id="mediumModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeMediumModal">&times;</span>
+      <h2>✍️ Medium Articles</h2>
+      <div id="mediumArticles">Loading articles...</div>
+    </div>
   </div>
 
+  <div id="articleModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeArticleModal">&times;</span>
+      <button id="backToArticles" style="margin-bottom: 10px;">&larr; Back</button>
+      <div id="mediumArticleContent" style="max-height: 70vh; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <!-- Editor Button -->
   <img src="images/editor.png" id="openImageModal" alt="Buka Editor" class="clickable editor-button" />
   <div id="imageModal" class="modal">
     <div class="modal-content">
@@ -71,6 +89,7 @@
     </div>
   </div>
 
+  <!-- Art Generator -->
   <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
   <div id="artModal" class="modal">
     <div class="modal-content">
@@ -87,59 +106,61 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const uploadedArtImage = document.getElementById('uploadedArtImage');
-      const statusArt = document.getElementById('statusArt');
+      const openMediumModal = document.getElementById('openMediumModal');
+      const closeMediumModal = document.getElementById('closeMediumModal');
+      const mediumModal = document.getElementById('mediumModal');
+      const articleModal = document.getElementById('articleModal');
+      const closeArticleModal = document.getElementById('closeArticleModal');
+      const backToArticles = document.getElementById('backToArticles');
+      const mediumArticles = document.getElementById('mediumArticles');
+      const mediumArticleContent = document.getElementById('mediumArticleContent');
 
-      document.getElementById('generateArtBtn').addEventListener('click', async () => {
-        const prompt = document.getElementById('artPrompt').value;
-        if (!prompt) return;
-
-        statusArt.textContent = 'Generating...';
-        uploadedArtImage.style.display = 'none';
-
+      openMediumModal.addEventListener('click', async () => {
+        mediumModal.style.display = 'block';
+        mediumArticles.innerHTML = 'Loading...';
         try {
-          const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt }),
-          });
-
-          const result = await response.json();
-          if (result.image_url) {
-            uploadedArtImage.src = result.image_url;
-            uploadedArtImage.style.display = 'block';
-            statusArt.textContent = '';
+          const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@hamzahnorsihab07');
+          const data = await res.json();
+          if (data.items && data.items.length > 0) {
+            mediumArticles.innerHTML = data.items.map(item => `
+              <p><a href="#" data-content="${encodeURIComponent(item.content)}" class="article-link">${item.title}</a></p>
+            `).join('');
           } else {
-            throw new Error('Image URL not returned');
+            mediumArticles.innerHTML = 'No articles found.';
           }
-        } catch (error) {
-          console.error(error);
-          statusArt.textContent = 'Error generating image.';
+        } catch {
+          mediumArticles.innerHTML = 'Failed to load articles.';
         }
       });
 
-      const mediumIcon = document.getElementById('mediumIcon');
-      mediumIcon.addEventListener('click', async () => {
-        const mediumFeed = 'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@hamzahnorsihab07';
-        const container = document.getElementById('mediumArticles');
-        container.innerHTML = 'Loading...';
-
-        try {
-          const res = await fetch(mediumFeed);
-          const data = await res.json();
-
-          if (data.items && data.items.length > 0) {
-            container.innerHTML = data.items.map(item => `<p><a href="${item.link}" target="_blank">${item.title}</a></p>`).join('');
-          } else {
-            container.innerHTML = 'No articles found.';
-          }
-        } catch (err) {
-          container.innerHTML = 'Failed to load articles.';
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('article-link')) {
+          e.preventDefault();
+          const content = decodeURIComponent(e.target.getAttribute('data-content'));
+          mediumArticleContent.innerHTML = content;
+          mediumModal.style.display = 'none';
+          articleModal.style.display = 'block';
         }
+      });
+
+      closeMediumModal.addEventListener('click', () => {
+        mediumModal.style.display = 'none';
+      });
+
+      closeArticleModal.addEventListener('click', () => {
+        articleModal.style.display = 'none';
+      });
+
+      backToArticles.addEventListener('click', () => {
+        articleModal.style.display = 'none';
+        mediumModal.style.display = 'block';
+      });
+
+      window.addEventListener('click', (event) => {
+        if (event.target === mediumModal) mediumModal.style.display = 'none';
+        if (event.target === articleModal) articleModal.style.display = 'none';
       });
     });
   </script>
-
-  <script src="script.js" defer></script>
 </body>
 </html>
