@@ -1,24 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
   const get = id => document.getElementById(id);
 
-  // === Elemen ===
+  // === Elements ===
   const openImageModalBtn = get("openImageModal");
   const imageModal = get("imageModal");
-  const closeImageBtn = get("closeImageModal");
   const imageGenerateBtn = get("generateImageBtn");
   const fileInput = get("imageInput");
-  const promptInput = get("imagePrompt");
-  const promptContainer = get("promptContainer");
-  const img = get("uploadedMemeImage");
   const status = get("statusImage");
+  const img = get("uploadedMemeImage");
+  const promptContainer = get("promptContainer");
+  const promptInput = get("imagePrompt");
 
   const openArtModalBtn = get("openArtModalBtn");
   const artModal = get("artModal");
-  const closeArtBtn = get("closeArtModal");
   const artGenerateBtn = get("generateArtBtn");
   const artPromptInput = get("artPrompt");
   const artImage = get("uploadedArtImage");
   const artStatus = get("statusArt");
+
+  const closeArtBtn = get("closeArtModal");
+  const closeImageBtn = get("closeImageModal");
 
   const profileIcon = get("profileIcon");
   const profilePopup = get("profilePopup");
@@ -31,61 +32,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediumIcon = get("mediumIcon");
   const mediumPopup = get("mediumPopup");
 
-  // === Fungsi bantu ===
-  const showModal = modal => modal && (modal.style.display = "block");
-  const hideModal = modal => modal && (modal.style.display = "none");
+  const showModal = modal => modal.style.display = "block";
+  const hideModal = modal => modal.style.display = "none";
 
-  const togglePopupWith = (e, popup) => {
-    e.stopPropagation();
-    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
-    allPopups.forEach(p => {
-      if (p !== popup) p.style.display = "none";
-    });
-    popup.style.display = (popup.style.display === "block") ? "none" : "block";
-  };
-
-  const closeAllPopups = e => {
-    const isOutside = (icon, popup) => popup && !popup.contains(e.target) && e.target !== icon;
-    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
-    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
-    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
-    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
-    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
-  };
-
-  const resetImageForm = () => {
-    if (fileInput) fileInput.value = "";
-    if (promptInput) promptInput.value = "";
-    if (promptContainer) promptContainer.style.display = "none";
-    if (img) {
-      img.src = "";
-      img.style.display = "none";
-    }
-    if (status) status.innerText = "";
-  };
-
-  const resetArtForm = () => {
-    if (artPromptInput) artPromptInput.value = "";
-    if (artImage) {
-      artImage.src = "";
-      artImage.style.display = "none";
-    }
-    if (artStatus) artStatus.innerText = "";
-  };
-
-  // === Event modal ===
   openImageModalBtn?.addEventListener("click", () => showModal(imageModal));
   openArtModalBtn?.addEventListener("click", () => showModal(artModal));
+
   closeImageBtn?.addEventListener("click", () => {
     hideModal(imageModal);
     resetImageForm();
   });
+
   closeArtBtn?.addEventListener("click", () => {
     hideModal(artModal);
     resetArtForm();
   });
 
-  // === Tutup modal jika klik luar area modal ===
   window.addEventListener("click", e => {
     if (e.target === imageModal) {
       hideModal(imageModal);
@@ -98,27 +60,26 @@ document.addEventListener("DOMContentLoaded", () => {
     closeAllPopups(e);
   });
 
-  // === Social popup toggle ===
   profileIcon?.addEventListener("click", e => togglePopupWith(e, profilePopup));
   emailIcon?.addEventListener("click", e => togglePopupWith(e, emailPopup));
   instaIcon?.addEventListener("click", e => togglePopupWith(e, instaPopup));
   twitterIcon?.addEventListener("click", e => togglePopupWith(e, twitterPopup));
   mediumIcon?.addEventListener("click", e => togglePopupWith(e, mediumPopup));
 
-  // === Tampilkan input prompt jika ada file
   fileInput?.addEventListener("change", () => {
     promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
   });
 
-  // === Editor Gambar ===
+  // === Photo Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput?.files?.[0];
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
+
+    const userPrompt = promptInput?.value.trim();
+    if (!userPrompt) return alert("⚠️ Prompt tidak boleh kosong.");
     if (file.size / 1024 / 1024 > 20) return alert("❌ Ukuran gambar melebihi 20MB.");
 
-    const prompt = promptInput?.value.trim();
-    if (!prompt) return alert("⚠️ Prompt tidak boleh kosong.");
-
+    const prompt = Edit gambar input ini sesuai instruksi berikut: ${userPrompt};
     status.innerText = "📤 Mengunggah gambar...";
     imageGenerateBtn.disabled = true;
     imageGenerateBtn.innerText = "Processing...";
@@ -131,18 +92,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: `Edit gambar input ini sesuai instruksi berikut: ${prompt}`,
-            input_image: base64Image
-          })
+          body: JSON.stringify({ prompt, input_image: base64Image })
         });
 
         const text = await res.text();
-        let result = {};
+        let result;
+
         try {
           result = JSON.parse(text);
         } catch {
-          throw new Error("❌ Response bukan JSON valid.");
+          throw new Error("❌ Response dari server bukan JSON valid.");
+        }
+
+        console.log("📥 [BFL] Response:", result);
+
+        if (!res.ok || !result?.result) {
+          throw new Error(result?.message || result?.error || "Gagal memproses gambar.");
         }
 
         const imageResult =
@@ -151,16 +116,17 @@ document.addEventListener("DOMContentLoaded", () => {
           result.image_url ||
           result.output?.image_url;
 
-        if (!res.ok || !imageResult) {
-          throw new Error(result.message || result.error || "❌ Gagal memproses gambar.");
+        if (!imageResult) throw new Error("⏰ Gambar tidak tersedia dari BFL AI.");
+
+        if (img) {
+          img.src = imageResult;
+          img.style.display = "block";
         }
 
-        img.src = imageResult;
-        img.style.display = "block";
         status.innerText = "✅ Gambar berhasil diubah!";
       } catch (err) {
         console.error("❌ Error:", err);
-        status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan.");
+        status.innerText = "⚠️ " + (err.message || "Terjadi kesalahan saat menghubungi AI.");
       } finally {
         imageGenerateBtn.disabled = false;
         imageGenerateBtn.innerText = "Upload & Generate";
@@ -176,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Generator Art ===
+  // === Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput?.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
@@ -194,11 +160,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const text = await res.text();
       let result = {};
+
       try {
         result = JSON.parse(text);
       } catch {
-        throw new Error("❌ Response tidak valid.");
+        throw new Error("❌ Response tidak dapat dibaca. Mungkin bukan JSON valid.");
       }
+
+      console.log("🎯 Response dari /api/generate-art:", result);
 
       const imageUrl =
         result.image_url ||
@@ -209,18 +178,59 @@ document.addEventListener("DOMContentLoaded", () => {
         result.images?.[0];
 
       if (!res.ok || !imageUrl) {
-        throw new Error(result.message || "⚠️ Gagal menghasilkan gambar.");
+        throw new Error(result.message || "Tidak ada output gambar dari AI.");
       }
 
-      artImage.src = imageUrl;
-      artImage.style.display = "block";
+      if (artImage) {
+        artImage.src = imageUrl;
+        artImage.style.display = "block";
+      }
+
       artStatus.innerText = "✅ Gambar berhasil dibuat.";
     } catch (err) {
       console.error("❌ Error:", err);
-      artStatus.innerText = err.message || "⚠️ Terjadi kesalahan.";
+      artStatus.innerText = err.message || "⚠️ Gagal menghasilkan gambar.";
     } finally {
       artGenerateBtn.disabled = false;
       artGenerateBtn.innerText = "Generate Art";
     }
   });
+
+  function togglePopupWith(e, popup) {
+    e.stopPropagation();
+    const allPopups = [profilePopup, emailPopup, instaPopup, twitterPopup, mediumPopup];
+    allPopups.forEach(p => {
+      if (p !== popup) p.style.display = "none";
+    });
+    if (popup) popup.style.display = (popup.style.display === "block") ? "none" : "block";
+  }
+
+  function closeAllPopups(e) {
+    const isOutside = (icon, popup) => !popup.contains(e.target) && e.target !== icon;
+    if (isOutside(profileIcon, profilePopup)) profilePopup.style.display = "none";
+    if (isOutside(emailIcon, emailPopup)) emailPopup.style.display = "none";
+    if (isOutside(instaIcon, instaPopup)) instaPopup.style.display = "none";
+    if (isOutside(twitterIcon, twitterPopup)) twitterPopup.style.display = "none";
+    if (isOutside(mediumIcon, mediumPopup)) mediumPopup.style.display = "none";
+  }
+
+  function resetImageForm() {
+    if (fileInput) fileInput.value = "";
+    if (promptInput) promptInput.value = "";
+    if (promptContainer) promptContainer.style.display = "none";
+    if (img) {
+      img.src = "";
+      img.style.display = "none";
+    }
+    if (status) status.innerText = "";
+  }
+
+  function resetArtForm() {
+    if (artPromptInput) artPromptInput.value = "";
+    if (artImage) {
+      artImage.src = "";
+      artImage.style.display = "none";
+    }
+    if (artStatus) artStatus.innerText = "";
+  }
 });

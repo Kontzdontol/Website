@@ -6,7 +6,7 @@
   <title>Meme Generator</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Google Analytics -->
+  <!-- ✅ Google Analytics (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0E5Q5ZHERX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -14,196 +14,141 @@
     gtag('js', new Date());
     gtag('config', 'G-0E5Q5ZHERX');
   </script>
-
-  <style>
-    .popup {
-      display: none;
-      position: absolute;
-      top: 100px;
-      left: 100px;
-      background: #fff;
-      padding: 20px;
-      border: 1px solid #aaa;
-      z-index: 1000;
-    }
-
-    .close-popup, .close {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      color: red;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6);
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      position: relative;
-    }
-  </style>
 </head>
 <body>
-  <!-- Background -->
+
+  <!-- Background layers -->
   <div class="background-layer background-gif"></div>
   <div class="background-layer background-jpg"></div>
 
-  <!-- Icons and Popups -->
+  <!-- Profile Icon -->
   <img src="images/profile.png" alt="Profile Icon" class="profile-icon" id="profileIcon" />
-  <div class="popup" id="profilePopup">
-    <span class="close-popup">&times;</span>
+
+  <!-- Profile Popup -->
+  <div class="popup profile-popup" id="profilePopup">
+    <span class="close-popup" data-target="profilePopup">&times;</span>
     <img src="images/profile-photo.jpg" alt="Foto Profil" class="popup-photo" />
     <h3>Hamzah Nor Sihab</h3>
-    <p>Hi, I'm Hamzah from Kudus, Indonesia...</p>
+    <p>
+      Hi, I'm Hamzah from Kudus, Indonesia, an economics graduate with a strong passion for learning new things.
+      I’m a self-taught enthusiast in the fields of cryptocurrency and Web3.
+    </p>
   </div>
 
+  <!-- Email Icon -->
   <img src="images/email.png" alt="Email Icon" class="email-icon" id="emailIcon" />
-  <div class="popup" id="emailPopup">
-    <span class="close-popup">&times;</span>
+  <div class="popup email-popup" id="emailPopup">
+    <span class="close-popup" data-target="emailPopup">&times;</span>
     <h3>📧 Contact Email</h3>
     <p><a href="mailto:hamzahnorsihab@gmail.com">hamzahnorsihab@gmail.com</a></p>
   </div>
 
+  <!-- Instagram Icon -->
   <img src="images/insta.png" alt="Instagram Icon" class="insta-icon" id="instaIcon" />
-  <div class="popup" id="instaPopup">
-    <span class="close-popup">&times;</span>
+  <div class="popup insta-popup" id="instaPopup">
+    <span class="close-popup" data-target="instaPopup">&times;</span>
     <h3>📸 Instagram</h3>
     <p><a href="https://instagram.com/h.n.sihab" target="_blank">@h.n.sihab</a></p>
   </div>
 
+  <!-- Twitter Icon -->
   <img src="images/twitter.png" alt="Twitter Icon" class="twitter-icon" id="twitterIcon" />
-  <div class="popup" id="twitterPopup">
-    <span class="close-popup">&times;</span>
+  <div class="popup twitter-popup" id="twitterPopup">
+    <span class="close-popup" data-target="twitterPopup">&times;</span>
     <h3>🐦 X account</h3>
     <p><a href="https://twitter.com/hazama_sol" target="_blank">@hazama_sol</a></p>
   </div>
 
+  <!-- Medium Icon -->
   <img src="images/medium.png" alt="Medium Icon" class="medium-icon" id="mediumIcon" />
-  <div class="popup" id="mediumPopup">
-    <span class="close-popup">&times;</span>
+  <div class="popup medium-popup" id="mediumPopup">
+    <span class="close-popup" data-target="mediumPopup">&times;</span>
     <h3>✍️ Medium</h3>
     <p><a href="https://medium.com/@hamzahnorsihab07" target="_blank">@hamzahnorsihab07</a></p>
   </div>
 
-  <!-- Editor Modal -->
+  <!-- Editor Button (photo editor) -->
   <img src="images/editor.png" id="openImageModal" alt="Buka Editor" class="clickable editor-button" />
-  <div id="imageModal" class="modal">
+
+  <!-- Image Editor Modal -->
+  <div id="imageModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-content">
       <span class="close" id="closeImageModal">&times;</span>
       <h2>🖼️ Photo Editor</h2>
-      <input type="file" id="imageInput" accept="image/*" />
-      <div id="promptContainer" style="display: none;">
+
+      <input type="file" id="imageInput" accept="image/*" style="margin-top: 10px;" />
+
+      <div id="promptContainer" style="display: none; margin-top: 10px;">
         <label for="imagePrompt">Masukkan prompt untuk edit gambar:</label>
-        <input type="text" id="imagePrompt" placeholder="Contoh: ubah jadi kartun" />
-        <button id="generateImageBtn">Upload & Generate</button>
+        <input type="text" id="imagePrompt" placeholder="Contoh: ubah jadi kartun" style="width: 100%; padding: 8px;" />
+        <button id="generateImageBtn" style="margin-top: 10px; padding: 10px 20px;">Upload & Generate</button>
       </div>
-      <div id="resultAreaImage">
-        <p id="statusImage"></p>
-        <img id="uploadedMemeImage" src="" alt="Hasil edit gambar" style="display: none;" />
+
+      <div id="resultAreaImage" style="margin-top: 20px;">
+        <p id="statusImage" style="color: gray;"></p>
+        <img id="uploadedMemeImage" src="" alt="Hasil edit gambar"
+             style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
       </div>
     </div>
   </div>
 
-  <!-- Art Generator Modal -->
+  <!-- Art Generator Button -->
   <img src="images/art.png" id="openArtModalBtn" alt="Buka Art Generator" class="clickable art-button" />
-  <div id="artModal" class="modal">
+
+  <!-- Art Generator Modal -->
+  <div id="artModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-content">
       <span class="close" id="closeArtModal">&times;</span>
       <h2>🎨 Art Generator</h2>
-      <input type="text" id="artPrompt" placeholder="Enter your prompt..." />
-      <button id="generateArtBtn">Generate Art</button>
-      <div id="resultAreaArt">
-        <p id="statusArt"></p>
-        <img id="uploadedArtImage" src="" alt="Hasil art dari prompt" style="display: none;" />
+
+      <input type="text" id="artPrompt" placeholder="Enter your prompt..." style="margin-top: 10px; width: 100%; padding: 8px;" />
+      <button id="generateArtBtn" style="margin-top: 10px; padding: 10px 20px;">Generate Art</button>
+
+      <div id="resultAreaArt" style="margin-top: 20px;">
+        <p id="statusArt" style="color: gray;"></p>
+        <img id="uploadedArtImage" src="" alt="Hasil art dari prompt"
+             style="max-width: 100%; display: none; border-radius: 8px; margin-top: 10px;" />
       </div>
     </div>
   </div>
 
+  <!-- Script -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Show popup
-      const popupMap = {
-        profileIcon: 'profilePopup',
-        emailIcon: 'emailPopup',
-        instaIcon: 'instaPopup',
-        twitterIcon: 'twitterPopup',
-        mediumIcon: 'mediumPopup'
-      };
+      const uploadedArtImage = document.getElementById('uploadedArtImage');
+      const statusArt = document.getElementById('statusArt');
 
-      for (const iconId in popupMap) {
-        const popupId = popupMap[iconId];
-        document.getElementById(iconId).addEventListener('click', () => {
-          document.getElementById(popupId).style.display = 'block';
-        });
-      }
-
-      // Close popups
-      document.querySelectorAll('.close-popup').forEach(closeBtn => {
-        closeBtn.addEventListener('click', () => {
-          closeBtn.parentElement.style.display = 'none';
-        });
-      });
-
-      // Modal open/close logic
-      const imageModal = document.getElementById('imageModal');
-      const artModal = document.getElementById('artModal');
-
-      document.getElementById('openImageModal').addEventListener('click', () => imageModal.style.display = 'block');
-      document.getElementById('closeImageModal').addEventListener('click', () => imageModal.style.display = 'none');
-
-      document.getElementById('openArtModalBtn').addEventListener('click', () => artModal.style.display = 'block');
-      document.getElementById('closeArtModal').addEventListener('click', () => artModal.style.display = 'none');
-
-      // Optional: click outside to close modal
-      window.addEventListener('click', (e) => {
-        if (e.target === imageModal) imageModal.style.display = 'none';
-        if (e.target === artModal) artModal.style.display = 'none';
-      });
-
-      // Art generation logic (optional)
       document.getElementById('generateArtBtn').addEventListener('click', async () => {
         const prompt = document.getElementById('artPrompt').value;
-        const status = document.getElementById('statusArt');
-        const resultImg = document.getElementById('uploadedArtImage');
         if (!prompt) return;
 
-        status.textContent = 'Generating...';
-        resultImg.style.display = 'none';
+        statusArt.textContent = 'Generating...';
+        uploadedArtImage.style.display = 'none';
 
         try {
-          const res = await fetch('/api/generate', {
+          const response = await fetch('/api/generate', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt })
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
           });
-          const json = await res.json();
-          if (json.image_url) {
-            resultImg.src = json.image_url;
-            resultImg.style.display = 'block';
-            status.textContent = '';
-          } else throw new Error('Invalid response');
-        } catch (err) {
-          console.error(err);
-          status.textContent = 'Error generating image.';
+
+          const result = await response.json();
+          if (result.image_url) {
+            uploadedArtImage.src = result.image_url;
+            uploadedArtImage.style.display = 'block';
+            statusArt.textContent = '';
+          } else {
+            throw new Error('Image URL not returned');
+          }
+        } catch (error) {
+          console.error(error);
+          statusArt.textContent = 'Error generating image.';
         }
       });
     });
   </script>
+  <script src="script.js" defer></script>
 </body>
 </html>
