@@ -131,6 +131,20 @@ body {
   word-break: break-word;
 }
 
+/* === Tombol keluar untuk popup kecil */
+.close-popup {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  color: red;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close-popup:hover {
+  color: darkred;
+}
+
 .email-popup .close-email {
   position: absolute;
   top: 6px;
@@ -163,6 +177,7 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
 }
 .modal-content {
+  position: relative; /* Tambahan penting */
   background-color: white;
   color: black;
   margin: 10% auto;
@@ -178,13 +193,17 @@ body {
   from { opacity: 0; transform: translateY(-20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* === Tombol keluar untuk modal besar */
 .close,
 .close-art {
+  position: absolute;
+  top: 10px;
+  right: 15px;
   color: red;
-  font-size: 24px;
-  float: right;
-  cursor: pointer;
+  font-size: 28px;
   font-weight: bold;
+  cursor: pointer;
 }
 .close:hover,
 .close-art:hover {
