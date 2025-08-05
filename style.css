@@ -85,7 +85,7 @@ body {
 .art-popup {
   display: none;
   position: fixed;
-  left: 300px;
+  left: calc(2vw + 50px);
   background-color: #fff;
   color: #000;
   border-radius: 10px;
@@ -97,12 +97,12 @@ body {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-.profile-popup { top: 50px; }
-.email-popup   { top: 180px; }
-.insta-popup   { top: 310px; }
-.twitter-popup { top: 440px; }
-.medium-popup  { top: 570px; }
-.art-popup     { top: 640px; }
+.profile-popup { top: 60px; }
+.email-popup   { top: 160px; }
+.insta-popup   { top: 260px; }
+.twitter-popup { top: 360px; }
+.medium-popup  { top: 460px; }
+.art-popup     { top: 620px; }
 
 .profile-popup h3,
 .email-popup h3,
@@ -177,7 +177,7 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
 }
 .modal-content {
-  position: relative; /* Tambahan penting */
+  position: relative;
   background-color: white;
   color: black;
   margin: 10% auto;
@@ -246,14 +246,17 @@ body {
   .twitter-popup,
   .medium-popup,
   .art-popup {
-    width: 90vw;
-    left: 5vw;
+    width: 85vw;
+    left: calc(5vw + 50px);
     padding: 12px;
   }
 
-  .art-popup {
-    top: 600px;
-  }
+  .profile-popup { top: 30px; }
+  .email-popup   { top: 110px; }
+  .insta-popup   { top: 190px; }
+  .twitter-popup { top: 270px; }
+  .medium-popup  { top: 350px; }
+  .art-popup     { top: 520px; }
 
   .profile-popup img {
     width: 70px;
