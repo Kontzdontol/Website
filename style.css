@@ -225,7 +225,7 @@ body {
   .insta-popup,
   .twitter-popup {
     width: 80vw;
-    left: calc(4vw + 250px);
+    left: calc(4vw + 150px);
     padding: 12px;
   }
 
