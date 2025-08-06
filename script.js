@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showModal(mediumModal);
   });
 
-  // === Icon Click Handling ===
   const iconPopupPairs = [
     { icon: profileIcon, popup: profilePopup },
     { icon: emailIcon, popup: emailPopup },
@@ -111,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Close popups if click outside ===
   window.addEventListener("click", e => {
     const target = e.target;
     const allPopups = iconPopupPairs.map(p => p.popup).filter(Boolean);
@@ -134,10 +132,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   fileInput?.addEventListener("change", () => {
-    promptContainer.style.display = fileInput.files.length > 0 ? "block" : "none";
+    if (fileInput.files && fileInput.files.length > 0) {
+      promptContainer.style.display = "block";
+    } else {
+      promptContainer.style.display = "none";
+    }
   });
 
-  // === Photo Editor ===
   imageGenerateBtn?.addEventListener("click", async () => {
     const file = fileInput?.files?.[0];
     if (!file) return alert("⚠️ Pilih gambar terlebih dahulu.");
@@ -153,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const reader = new FileReader();
     reader.onload = async () => {
-      const base64Image = reader.result.split(",")[1];
+      const base64Image = reader.result;
 
       try {
         const res = await fetch("/api/generate", {
@@ -193,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsDataURL(file);
   });
 
-  // === Art Generator ===
   artGenerateBtn?.addEventListener("click", async () => {
     const prompt = artPromptInput?.value.trim();
     if (!prompt) return alert("🖌️ Prompt tidak boleh kosong.");
